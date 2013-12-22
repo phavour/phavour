@@ -18,7 +18,7 @@
     timeoutForMediumTests="10"
     timeoutForLargeTests="60"
     strict="false"
-    bootstrap="lib/Phavour/Tests/bootstrap.php"
+    bootstrap="Phavour/Tests/bootstrap.php"
     verbose="false">
     <!-- 
     printerFile="/path/to/ResultPrinter.php"
@@ -29,17 +29,17 @@
 
     <testsuites>
         <testsuite name="All Phavour Tests">
-            <directory>lib/Phavour/Tests</directory>
+            <directory>Phavour/Tests</directory>
         </testsuite>
     </testsuites>
     
     <filter>
         <whitelist>
-            <directory>lib/*</directory>
+            <directory>Phavour/*</directory>
             <exclude>
-                <directory>lib/Phavour/Tests</directory>
+                <directory>Phavour/Tests</directory>
                 <directory>vendor/*</directory>
-                <file>lib/Phavour/Tests/bootstrap.php</file>
+                <file>Phavour/Tests/bootstrap.php</file>
             </exclude>
         </whitelist>
     </filter>
