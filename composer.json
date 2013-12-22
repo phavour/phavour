@@ -1,0 +1,19 @@
+{
+    "name": "phavour/phavour",
+    "description": "Phavour is a new PHP Framework with a focus on speed and ease of development.",
+    "keywords": ["phavour"],
+    "homepage": "https://github.com/phavour/phavour",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Roger Thomas",
+            "email": "rogere84@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.7"
+    },
+    "autoload": {
+        "psr-0": { "Phavour": "" }
+    }
+}
