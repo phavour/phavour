@@ -164,8 +164,10 @@ class Application
                 // @codeCoverageIgnoreEnd
             }
         }
-        $path = $_SERVER['REQUEST_URI'];
-        $method = $_SERVER['REQUEST_METHOD'];
+
+        $request = $this->getRequest();
+        $path = $request->getRequestUri();
+        $method = $request->getRequestMethod();
         $this->router = new Router();
         $this->router->setRoutes($this->routes);
         $this->router->setMethod($method);
@@ -183,7 +185,6 @@ class Application
         if (class_exists($classString)) {
             try {
                 // TODO : This needs to be moved into a $this->boot() method
-                $request = $this->getRequest();
                 $response = $this->getResponse();
                 $view = new View($package, $runnables[0], $runnables[1]);
                 $view->setRouter($this->router);
