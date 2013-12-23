@@ -152,7 +152,7 @@ class AdapterMemcache extends AdapterAbstract
      */
     public function has($key)
     {
-        return ($this->get($key) != false);
+        return ($this->get($key) !== false);
     }
 
     /**
