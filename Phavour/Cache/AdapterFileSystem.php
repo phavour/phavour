@@ -33,6 +33,7 @@
 namespace Phavour\Cache;
 
 use Phavour\Cache\AdapterAbstract;
+use Phavour\Helper\FileSystem\Directory;
 
 /**
  * @author Roger Thomas
@@ -48,12 +49,22 @@ class AdapterFileSystem extends AdapterAbstract
     /**
      * @var string
      */
-    private $prefix = 'Phavour_Cache_AdapterFileSystem_';
+    private $prefix = 'PCAFS_';
 
     /**
      * @var integer
      */
     const DEFAULT_TTL = 86400;
+
+    /**
+     * @var Directory|null
+     */
+    private $helper = null;
+
+    /**
+     * @var string|null
+     */
+    private $path = null;
 
     /**
      * Construct requires an array with the key of path, which should point
@@ -67,6 +78,7 @@ class AdapterFileSystem extends AdapterAbstract
             throw new \Exception('"path" key must be specified and be a valid location');
         }
         $this->path = rtrim($config['path'], '/\\');
+        $this->helper = new Directory();
     }
 
     /**
@@ -75,8 +87,9 @@ class AdapterFileSystem extends AdapterAbstract
      */
     public function get($key)
     {
-        $fname = md5($key);
-        $path = $this->path . self::DS . $this->prefix . $fname;
+        $md5 = md5($key);
+        $folderPath = $this->getFolderPathFromMd5($md5);
+        $path = $this->path . self::DS . $folderPath . self::DS . $this->prefix . $md5;
         if (!file_exists($path) || !is_readable($path)) {
             return false;
         }
@@ -93,7 +106,7 @@ class AdapterFileSystem extends AdapterAbstract
         }
 
         $val = @unserialize($pieces[1]);
-        if (!$val === false) {
+        if ($val === false) {
             $this->remove($key);
             return false;
         }
@@ -110,8 +123,16 @@ class AdapterFileSystem extends AdapterAbstract
      */
     public function set($key, $value, $ttl = self::DEFAULT_TTL)
     {
-        $fname = md5($key);
-        $handle = fopen($this->path . self::DS . $this->prefix . $fname, 'w');
+        $md5 = md5($key);
+        $folderPath = $this->getFolderPathFromMd5($md5);
+        $create = $this->helper->createPath($this->path, $folderPath);
+        if (!$create) {
+            return false;
+        }
+        $basePaths = $this->path . self::DS . $folderPath;
+        $path = $basePaths . self::DS . $this->prefix . $md5;
+
+        $handle = fopen($path, 'w');
         if ($handle) {
             $data = time() + $ttl . PHP_EOL . serialize($value);
             $success = fwrite($handle, $data);
@@ -142,8 +163,9 @@ class AdapterFileSystem extends AdapterAbstract
      */
     public function renew($key, $ttl = self::DEFAULT_TTL)
     {
-        $fname = md5($key);
-        $path = $this->path . self::DS . $this->prefix . $fname;
+        $md5 = md5($key);
+        $folderPath = $this->getFolderPathFromMd5($md5);
+        $path = $this->path . self::DS . $folderPath . self::DS . $this->prefix . $md5;
         if (!file_exists($path) || !is_readable($path)) {
             return false;
         }
@@ -175,8 +197,9 @@ class AdapterFileSystem extends AdapterAbstract
      */
     public function remove($key)
     {
-        $fname = md5($key);
-        $path = $this->path . self::DS . $this->prefix . $fname;
+        $md5 = md5($key);
+        $folderPath = $this->getFolderPathFromMd5($md5);
+        $path = $this->path . self::DS . $folderPath . self::DS . $this->prefix . $md5;
         if (!file_exists($path) || !is_readable($path)) {
             return true;
         }
@@ -185,25 +208,30 @@ class AdapterFileSystem extends AdapterAbstract
     }
 
     /**
-     * Flush all existing Cache
+     * Flush all existing Cache.
      * @return boolean
      */
     public function flush()
     {
-        $files = @scandir($this->path);
-        if (!$files) {
-            return false;
+        try {
+        	$this->helper->recursivelyDeleveFromDirectory($this->path);
+        	return true;
+        } catch (\Exception $e) {
         }
-        $prefixLength = strlen($this->prefix);
-        $success = true;
-        foreach ($files as $file) {
-            if (substr($file, 0, $prefixLength) == $this->prefix) {
-                $unlink = unlink($this->path . self::DS . $file);
-                if (!$unlink) {
-                    $success = false;
-                }
-            }
-        }
-        return $success;
+
+        return false;
+    }
+
+    /**
+     * Get a folder path from a given MD5
+     * @param string $md5
+     * @return string
+     */
+    private function getFolderPathFromMd5($md5)
+    {
+        $folderOne = substr($md5, 0, 2);
+        $folderTwo = substr($md5, 2, 2);
+
+        return $folderOne . self::DS . $folderTwo;
     }
 }
