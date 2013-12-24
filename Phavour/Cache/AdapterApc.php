@@ -66,7 +66,9 @@ class AdapterApc extends AdapterAbstract
     public function get($key)
     {
         if (!$this->hasApc) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $record = apc_fetch($key, $found);
@@ -86,8 +88,10 @@ class AdapterApc extends AdapterAbstract
      */
     public function set($key, $value, $ttl = self::DEFAULT_TTL)
     {
-        if (!$this->hasapc) {
+        if (!$this->hasApc) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         return apc_store($key, $value, $ttl);
@@ -115,7 +119,9 @@ class AdapterApc extends AdapterAbstract
     public function renew($key, $ttl = self::DEFAULT_TTL)
     {
         if (!$this->hasApc) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $val = apc_fetch($key, $fetched);
@@ -135,7 +141,9 @@ class AdapterApc extends AdapterAbstract
     public function remove($key)
     {
         if (!$this->hasApc) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         return apc_delete($key);
@@ -148,7 +156,9 @@ class AdapterApc extends AdapterAbstract
     public function flush()
     {
         if (!$this->hasApc) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         return apc_clear_cache();
@@ -156,11 +166,9 @@ class AdapterApc extends AdapterAbstract
 
     /**
      * Check if apc is enabled
-     * @return boolean
      */
     private function checkExtension()
     {
         $this->hasApc = (extension_loaded('apc'));
-        return $this->hasApc;
     }
 }

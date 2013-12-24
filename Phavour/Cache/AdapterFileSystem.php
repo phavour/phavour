@@ -139,7 +139,9 @@ class AdapterFileSystem extends AdapterAbstract
             return ($success !== false);
         }
 
+        // @codeCoverageIgnoreStart
         return false;
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -172,7 +174,9 @@ class AdapterFileSystem extends AdapterAbstract
 
         $content = file_get_contents($path);
         if (!$content) {
+            // @codeCoverageIgnoreStart
             return false;
+            // @codeCoverageIgnoreEnd
         }
 
         $pieces = explode(PHP_EOL, $content);
@@ -201,7 +205,7 @@ class AdapterFileSystem extends AdapterAbstract
         $folderPath = $this->getFolderPathFromMd5($md5);
         $path = $this->path . self::DS . $folderPath . self::DS . $this->prefix . $md5;
         if (!file_exists($path) || !is_readable($path)) {
-            return true;
+            return false;
         }
 
         return unlink($path);
@@ -214,12 +218,15 @@ class AdapterFileSystem extends AdapterAbstract
     public function flush()
     {
         try {
-        	$this->helper->recursivelyDeleveFromDirectory($this->path);
+        	$this->helper->recursivelyDeleteFromDirectory($this->path);
         	return true;
+
+        // @codeCoverageIgnoreStart
         } catch (\Exception $e) {
         }
 
         return false;
+        // @codeCoverageIgnoreEnd
     }
 
     /**

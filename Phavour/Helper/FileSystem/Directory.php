@@ -63,14 +63,18 @@ class Directory
         $dir = $base;
         foreach ($pieces as $directory) {
             if (empty($directory)) {
+                // @codeCoverageIgnoreStart
                 continue; // Handle the / from the exploded path
+                // @codeCoverageIgnoreEnd
             }
 
             $singlePath = $dir . self::DS . $directory;
             if (!file_exists($singlePath) || !is_dir($singlePath)) {
-                $create = mkdir($singlePath);
+                $create = @mkdir($singlePath);
                 if ($create === false) {
+                    // @codeCoverageIgnoreStart
                     return false;
+                    // @codeCoverageIgnoreEnd
                 }
             }
             $dir = $singlePath;
@@ -84,7 +88,7 @@ class Directory
      * @param string $baseDirectory
      * @return void
      */
-    public function recursivelyDeleveFromDirectory($baseDirectory)
+    public function recursivelyDeleteFromDirectory($baseDirectory)
     {
         if (!is_dir($baseDirectory)) {
             return;
@@ -103,7 +107,7 @@ class Directory
             }
 
             if ($file->isDir()) {
-                $this->recursivelyDeleveFromDirectory($file->getRealPath());
+                $this->recursivelyDeleteFromDirectory($file->getRealPath());
             } else {
                 unlink($file->getRealPath());
             }
