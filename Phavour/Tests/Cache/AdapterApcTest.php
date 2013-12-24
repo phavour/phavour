@@ -32,31 +32,54 @@
  */
 namespace Phavour\Tests\Cache;
 
-use Phavour\Cache\AdapterNull;
+use Phavour\Cache\AdapterApc;
 
 /**
  * @author Roger Thomas
- * AdapterNullTest
+ * AdapterApcTest
  */
-class AdapterNullTest extends \PHPUnit_Framework_TestCase
+class AdapterApcTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * @var AdapterNull
+     * @var AdapterApc
      */
     private $adapter = null;
 
+    private $name = null;
+
     public function setUp()
     {
-        $this->adapter = new AdapterNull();
+        $this->name = md5(__CLASS__);
+        $this->adapter = new AdapterApc();
+        $this->adapter->flush();
     }
 
-    public function testAllReturnFalse()
+    public function testSetGet()
     {
-        $this->assertFalse($this->adapter->flush());
-        $this->assertFalse($this->adapter->set('abc', '123', 86400));
-        $this->assertFalse($this->adapter->renew('abc', 86400));
-        $this->assertFalse($this->adapter->get('abc'));
-        $this->assertFalse($this->adapter->has('abc'));
-        $this->assertFalse($this->adapter->remove('abc'));
+        $this->adapter->set($this->name, 'foobar', 10);
+        $this->assertEquals('foobar', $this->adapter->get($this->name));
+    }
+
+    public function testSetRenew()
+    {
+        $this->assertTrue($this->adapter->set($this->name, 'abcfoobar', 10));
+        $this->assertTrue($this->adapter->renew($this->name, 10));
+        $this->assertFalse($this->adapter->renew(md5(microtime()), 100));
+    }
+
+    public function testHas()
+    {
+        $this->adapter->set($this->name, 'abcfoobar', 10);
+        $this->assertTrue($this->adapter->has($this->name));
+        $this->assertEquals('abcfoobar', $this->adapter->get($this->name));
+        $this->adapter->remove($this->name);
+        $this->assertFalse($this->adapter->has($this->name));
+    }
+
+    public function testRemove()
+    {
+        $this->adapter->set($this->name, 'abcfoobar', 10);
+        $this->adapter->remove($this->name);
+        $this->assertFalse($this->adapter->has($this->name));
     }
 }

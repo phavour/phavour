@@ -36,57 +36,27 @@ use Phavour\Cache\AdapterAbstract;
 
 /**
  * @author Roger Thomas
- * AdapterMemcache
+ * AdapterApc
  */
-class AdapterMemcache extends AdapterAbstract
+class AdapterApc extends AdapterAbstract
 {
+    /**
+     * @var boolean
+     */
+    private $hasApc = false;
+
     /**
      * @var integer
      */
     const DEFAULT_TTL = 86400;
 
     /**
-     * @var \Memcache
+     * Construct the adapter. The parameter is not required.
+     * @param array $config (not needed) required by Abstract
      */
-    private $memcache = null;
-
-    /**
-     * Construct the adapter, giving an array of servers.
-     * @example
-     *     array(
-     *         array(
-     *             'host' => 'cache1.example.com',
-     *             'port' => 11211,
-     *             'weight' => 1,
-     *             'timeout' => 60
-     *         ),
-     *         array(
-     *             'host' => 'cache2.example.com',
-     *             'port' => 11211,
-     *             'weight' => 2,
-     *             'timeout' => 60
-     *         )
-     *     )
-     * @param array $servers
-     */
-    public function __construct(array $servers)
+    public function __construct(array $config = array())
     {
-        try {
-            $this->memcache = new \Memcache();
-            foreach ($servers as $server) {
-                $this->memcache->addserver(
-                    $server['host'],
-                    $server['port'],
-                    null,
-                    $server['weight'],
-                    $server['timeout']
-                );
-            }
-        } catch (\Exception $e) {
-            // @codeCoverageIgnoreStart
-            $this->memcache = null;
-            // @codeCoverageIgnoreEnd
-        }
+        $this->checkExtension();
     }
 
     /**
@@ -95,20 +65,18 @@ class AdapterMemcache extends AdapterAbstract
      */
     public function get($key)
     {
-        if (!$this->hasConnection()) {
+        if (!$this->hasApc) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        try {
-            return $this->memcache->get($key);
-        // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        $record = apc_fetch($key, $found);
+        if ($found) {
+            return $record;
         }
 
         return false;
-        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -120,26 +88,13 @@ class AdapterMemcache extends AdapterAbstract
      */
     public function set($key, $value, $ttl = self::DEFAULT_TTL)
     {
-        if (!$this->hasConnection()) {
+        if (!$this->hasApc) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        $flag = null;
-
-        if (!is_bool($value) && !is_int($value) && !is_float($value)) {
-            $flag = MEMCACHE_COMPRESSED;
-        }
-
-        try {
-            return $this->memcache->set($key, $value, $flag, $ttl);
-        // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
-        }
-
-        return false;
-        // @codeCoverageIgnoreEnd
+        return apc_store($key, $value, $ttl);
     }
 
     /**
@@ -163,26 +118,17 @@ class AdapterMemcache extends AdapterAbstract
      */
     public function renew($key, $ttl = self::DEFAULT_TTL)
     {
-        if (!$this->hasConnection()) {
+        if (!$this->hasApc) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        $value = $this->get($key);
-        if ($value) {
-            $flag = null;
-            if (!is_bool($value) && !is_int($value) && !is_float($value)) {
-                $flag = MEMCACHE_COMPRESSED;
-            }
+        $val = apc_fetch($key, $fetched);
 
-            try {
-                return $this->memcache->replace($key, $value, $flag, $ttl);
-            // @codeCoverageIgnoreStart
-            } catch (\Exception $e) {
-            }
+        if ($fetched) {
+            return apc_store($key, $val, $ttl);
         }
-        // @codeCoverageIgnoreEnd
 
         return false;
     }
@@ -194,20 +140,13 @@ class AdapterMemcache extends AdapterAbstract
      */
     public function remove($key)
     {
-        if (!$this->hasConnection()) {
+        if (!$this->hasApc) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        try {
-            return $this->memcache->delete($key);
-        // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
-        }
-
-        return false;
-        // @codeCoverageIgnoreEnd
+        return apc_delete($key);
     }
 
     /**
@@ -216,28 +155,20 @@ class AdapterMemcache extends AdapterAbstract
      */
     public function flush()
     {
-        if (!$this->hasConnection()) {
+        if (!$this->hasApc) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        try {
-            return $this->memcache->flush();
-            // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
-        }
-
-        return false;
-        // @codeCoverageIgnoreEnd
+        return apc_clear_cache();
     }
 
     /**
-     * Check if instance of \Memcache has been assigned
-     * @return boolean
+     * Check if apc is enabled
      */
-    private function hasConnection()
+    private function checkExtension()
     {
-        return ($this->memcache instanceof \Memcache);
+        $this->hasApc = (extension_loaded('apc'));
     }
 }
