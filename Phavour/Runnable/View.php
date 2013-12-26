@@ -182,6 +182,9 @@ class View
      */
     public function setPackage($package)
     {
+        if ($package != $this->package) {
+            $this->layoutLocation = null;
+        }
         $this->package = $this->treatPackageName($package);
     }
 
@@ -204,10 +207,10 @@ class View
     }
 
     /**
-     * Set the method name
+     * Set the script name (usually the method name)
      * @param string $method
      */
-    public function setMethod($method)
+    public function setScriptName($method)
     {
         $this->method = $method;
     }
