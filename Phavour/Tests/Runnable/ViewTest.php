@@ -70,7 +70,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testMethodName()
     {
         $this->assertEquals('index', $this->view->getMethod());
-        $this->view->setMethod('noSuchMethod');
+        $this->view->setScriptName('noSuchMethod');
         $this->assertEquals('noSuchMethod', $this->view->getMethod());
     }
 

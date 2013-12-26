@@ -250,7 +250,7 @@ class Router
         }
 
         if (!array_key_exists('method', $route)) {
-            return false;
+            $route['method'] = 'GET';
         }
 
         $route['method'] = strtoupper($route['method']);
