@@ -100,6 +100,16 @@ class Application
     private $mode = null;
 
     /**
+     * @var Response|null
+     */
+    private $response = null;
+
+    /**
+     * @var Request|null
+     */
+    private $request = null;
+
+    /**
      * Construct, giving the realpath to the application root folder.
      * @param string $appDirectory
      */
@@ -130,6 +140,8 @@ class Application
      */
     public function setup()
     {
+        $this->request = new Request();
+        $this->response = new Response();
         $this->env = new Environment();
         $this->mode = $this->env->getMode();
         if (!$this->env->isProduction() || $this->cache == null) {
@@ -165,13 +177,10 @@ class Application
             }
         }
 
-        $request = $this->getRequest();
-        $path = $request->getRequestUri();
-        $method = $request->getRequestMethod();
         $this->router = new Router();
         $this->router->setRoutes($this->routes);
-        $this->router->setMethod($method);
-        $this->router->setPath($path);
+        $this->router->setMethod($this->request->getRequestMethod());
+        $this->router->setPath($this->request->getRequestUri());
         try {
             $route = $this->router->getRoute();
         } catch (RouteNotFoundException $e) {
@@ -184,17 +193,10 @@ class Application
         $classString = '\\' . $package . '\\src\\' . $runnables[0];
         if (class_exists($classString)) {
             try {
-                // TODO : This needs to be moved into a $this->boot() method
-                $response = $this->getResponse();
-                $view = new View($package, $runnables[0], $runnables[1]);
-                $view->setRouter($this->router);
-                $view->setApplicationPath($this->appDirectory);
-                $class = new $classString($request, $response, $view, $this->env, $this->cache, $this->router);
-                /* @var $class Runnable */
-                $class->init();
-                if (is_callable(array($class, $runnables[1]))) {
-                    call_user_func_array(array($class, $runnables[1]), $route['params']);
-                    $class->finalise();
+                $instance = $this->getRunnable($package, $runnables[0], $runnables[1], $classString);
+                if (is_callable(array($instance, $runnables[1]))) {
+                    call_user_func_array(array($instance, $runnables[1]), $route['params']);
+                    $instance->finalise();
                     return;
                 }
             // @codeCoverageIgnoreStart
@@ -209,24 +211,6 @@ class Application
         $this->notFound(new RunnableNotFoundException('No such runnable: ' . $classString . '::' . $runnables[1]));
     }
     // @codeCoverageIgnoreEnd
-
-    /**
-     * Get the request object
-     * @return \Phavour\Http\Request
-     */
-    public function getRequest()
-    {
-        return new Request();
-    }
-
-    /**
-     * Get the response object
-     * @return \Phavour\Http\Response
-     */
-    public function getResponse()
-    {
-        return new Response();
-    }
 
     /**
      * Load and assign the packages array to the
@@ -365,19 +349,14 @@ class Application
      */
     private function notFound(\Exception $throwable)
     {
-        $request = $this->getRequest();
-        $response = $this->getResponse();
         if ($this->env->isProduction()) {
             if (false != ($errorClass = $this->getErrorClass())) {
                 try {
                     // TODO : This needs to be moved into a $this->boot() method
-                    $response->setStatus(404);
-                    $view = new View('DefaultPackage', 'Error', 'notFound');
-                    $view->setApplicationPath($this->appDirectory);
-                    $class = new $errorClass($request, $response, $view, $this->env, $this->cache, $this->router);
-                    $class->init();
-                    if (is_callable(array($class, 'notFound'))) {
-                        $class->notFound();
+                    $this->response->setStatus(404);
+                    $instance = $this->getRunnable('DefaultPackage', 'Error', 'notFound', $errorClass);
+                    if (is_callable(array($instance, 'notFound'))) {
+                        $instance->notFound();
                     } else {
                         // @codeCoverageIgnoreStart
                         $e = new RunnableNotFoundException('Runnable not found');
@@ -385,7 +364,7 @@ class Application
                         throw $e;
                         // @codeCoverageIgnoreEnd
                     }
-                    $class->finalise();
+                    $instance->finalise();
                     return;
                 // @codeCoverageIgnoreStart
                 } catch (\Exception $e) {
@@ -397,9 +376,9 @@ class Application
 
             // @codeCoverageIgnoreStart
             @ob_get_clean();
-            $response->setStatus(404);
-            $response->setBody('<h1 style="font:28px/1.5 Helvetica,Arial,Verdana,sans-serif;">404 Not Found</h1>');
-            $response->sendResponse();
+            $this->response->setStatus(404);
+            $this->response->setBody('<h1 style="font:28px/1.5 Helvetica,Arial,Verdana,sans-serif;">404 Not Found</h1>');
+            $this->response->sendResponse();
             return;
             // @codeCoverageIgnoreEnd
         } else {
@@ -420,25 +399,19 @@ class Application
      */
     private function error(\Exception $throwable)
     {
-        $request = $this->getRequest();
-        $response = $this->getResponse();
         if ($this->env->isProduction()) {
             if (false != ($errorClass = $this->getErrorClass())) {
                 try {
-                    // TODO : This needs to be moved into a $this->boot() method
-                    $response->setStatus(500);
-                    $view = new View('DefaultPackage', 'Error', 'uncaughtException');
-                    $view->setApplicationPath($this->appDirectory);
-                    $class = new $errorClass($request, $response, $view, $this->env, $this->cache, $this->router);
-                    $class->init();
-                    if (is_callable(array($class, 'uncaughtException'))) {
-                        $class->uncaughtException();
+                    $this->response->setStatus(500);
+                    $instance = $this->getRunnable('DefaultPackage', 'Error', 'uncaughtException', $errorClass);
+                    if (is_callable(array($instance, 'uncaughtException'))) {
+                        $instance->uncaughtException();
                     } else {
                         $e = new RunnableNotFoundException('Runnable not found');
                         $e->setAdditionalData('Expected: ', '\\DefaultPackage\\src\\Error::uncaughtException()');
                         throw $e;
                     }
-                    $class->finalise();
+                    $instance->finalise();
                     return;
                 } catch (\Exception $e) {
                     // Ignore, we're already here.
@@ -446,9 +419,9 @@ class Application
             }
 
             @ob_get_clean();
-            $response->setStatus(500);
-            $response->setBody('<h1 style="font:28px/1.5 Helvetica,Arial,Verdana,sans-serif;">Application Error</h1>');
-            $response->sendResponse();
+            $this->response->setStatus(500);
+            $this->response->setBody('<h1 style="font:28px/1.5 Helvetica,Arial,Verdana,sans-serif;">Application Error</h1>');
+            $this->response->sendResponse();
             return;
         } else {
             FormattedException::display($throwable);
@@ -486,5 +459,40 @@ class Application
         }
 
         return $className;
+    }
+
+    /**
+     * Get the corresponding runnable for the given parameters
+     * @param string $package
+     * @param string $class
+     * @param string $method
+     * @param string $className
+     * @return \Phavour\Runnable
+     */
+    private function getRunnable($package, $class, $method, $className)
+    {
+        $view = $this->getViewFor($package, $class, $method);
+        $instance = new $className($this->request, $this->response, $view, $this->env, $this->cache, $this->router, $this->config);
+        /* @var $instance Runnable */
+        $instance->init();
+
+        return $instance;
+    }
+
+    /**
+     * Retrieve an instance of View for a given package, class, method combination
+     * @param string $package
+     * @param string $class
+     * @param string $method
+     * @return \Phavour\Runnable\View
+     */
+    private function getViewFor($package, $class, $method)
+    {
+        $view = new View($package, $class, $method);
+        $view->setApplicationPath($this->appDirectory);
+        $view->setRouter($this->router);
+        $view->setConfig($this->config);
+
+        return $view;
     }
 }

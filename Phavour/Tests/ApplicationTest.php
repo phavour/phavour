@@ -62,16 +62,6 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('500: Unexpected Error', $content);
     }
 
-    public function testGetRequest()
-    {
-        $this->assertInstanceOf('\Phavour\Http\Request', $this->app->getRequest());
-    }
-
-    public function testGetResponse()
-    {
-        $this->assertInstanceOf('\Phavour\Http\Response', $this->app->getResponse());
-    }
-
     public function testSetup()
     {
         $this->app->setup();
