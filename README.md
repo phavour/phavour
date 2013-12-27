@@ -3,6 +3,8 @@ Phavour
 
 Phavour is a new PHP Framework with a focus on speed and ease of development.
 
-## Testing
+## Checkout out Template
 
-To run Unit Tests against Phavour, please checkout the phavour-tests repository.
+We've set up a great little templated application, which shows you how to set up Phavour and get running.
+It also comes with the Phavour Docs package, so you can review the docs as you wish.
+[View the template](http://github.com/phavour/phavour-template)

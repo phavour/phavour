@@ -165,10 +165,19 @@ class View
     }
 
     /**
-     * Get the method name
+     * Get the method name (alias for getScriptName)
      * @return string
      */
     public function getMethod()
+    {
+        return $this->getScriptName();
+    }
+
+    /**
+     * Get the script name
+     * @return string
+     */
+    public function getScriptName()
     {
         return $this->method;
     }
@@ -188,6 +197,9 @@ class View
      */
     public function setPackage($package)
     {
+        if ($package != $this->package) {
+            $this->layoutLocation = null;
+        }
         $this->package = $this->treatPackageName($package);
     }
 
@@ -219,12 +231,21 @@ class View
     }
 
     /**
-     * Set the method name
+     * Set the script name (usually the method name)
+     * @param string $method
+     */
+    public function setScriptName($name)
+    {
+        $this->method = $name;
+    }
+
+    /**
+     * Set the method name (alias for setScriptName)
      * @param string $method
      */
     public function setMethod($method)
     {
-        $this->method = $method;
+        $this->setScriptName($method);
     }
 
     /**

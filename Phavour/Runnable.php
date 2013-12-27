@@ -220,4 +220,23 @@ abstract class Runnable
 
         return $this->router->urlFor($routeName, $params);
     }
+
+    /**
+     * When you need to send a not found in your runnable, you
+     * can call this directly.
+     * Optionally, you can specify the package name, class name,
+     * and method name to render accordingly.
+     * @param sring $package (optional) default 'DefaultPackage'
+     * @param sring $class (optional) default 'Error'
+     * @param sring $method (optional) default 'notFound'
+     * @return void
+     */
+    public function notFound($package = 'DefaultPackage', $class = 'Error', $method = 'notFound')
+    {
+        $this->response->setStatus(404);
+        $this->view->setPackage($package);
+        $this->view->setClass($class);
+        $this->view->setScriptName($method);
+        return;
+    }
 }
