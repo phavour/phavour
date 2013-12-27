@@ -472,7 +472,7 @@ class Application
     private function getRunnable($package, $class, $method, $className)
     {
         $view = $this->getViewFor($package, $class, $method);
-        $instance = new $className($this->request, $this->response, $view, $this->env, $this->cache, $this->router);
+        $instance = new $className($this->request, $this->response, $view, $this->env, $this->cache, $this->router, $this->config);
         /* @var $instance Runnable */
         $instance->init();
 
@@ -491,6 +491,7 @@ class Application
         $view = new View($package, $class, $method);
         $view->setApplicationPath($this->appDirectory);
         $view->setRouter($this->router);
+        $view->setConfig($this->config);
 
         return $view;
     }

@@ -76,6 +76,11 @@ abstract class Runnable
     protected $router = null;
 
     /**
+     * @var array
+     */
+    protected $config = array();
+
+    /**
      * Redirect the request.
      * @param string $url
      * @param integer $status
@@ -93,8 +98,9 @@ abstract class Runnable
      * @param Environment $environment
      * @param AdapterAbstract $cacheAdapter
      * @param Router|null $router
+     * @param array $config
      */
-    final public function __construct(Request $request, Response $response, View $view, Environment $environment, AdapterAbstract $cacheAdapter = null, Router $router = null)
+    final public function __construct(Request $request, Response $response, View $view, Environment $environment, AdapterAbstract $cacheAdapter = null, Router $router = null, array $config = array())
     {
         $this->request = $request;
         $this->response = $response;
@@ -102,6 +108,7 @@ abstract class Runnable
         $this->environment = $environment;
         $this->cache = $cacheAdapter;
         $this->router = $router;
+        $this->config = $config;
     }
 
     /**
@@ -155,8 +162,31 @@ abstract class Runnable
     }
 
     /**
+     * Get a config value by specifying the key name
+     * @param string|null $key
+     * @return mixed|null
+     */
+    final public function config($key)
+    {
+        if (array_key_exists($key, $this->config)) {
+            return $this->config[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the entire configuration array
+     * @return array
+     */
+    final public function getConfig()
+    {
+        return $this->config;
+    }
+
+    /**
      * Stub for users to extend. Called directly after __construct
-     * @return boolean
+     * @return void
      */
     public function init()
     {

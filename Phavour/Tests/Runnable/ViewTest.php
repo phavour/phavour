@@ -50,6 +50,12 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function setUp()
     {
         $this->view = new View('DefaultPackage', 'Index', 'index');
+        $this->view->setConfig(
+            array(
+                'foo' => 'bar',
+                'abc' => '123'
+            )
+        );
     }
 
     public function testPackageName()
@@ -58,6 +64,13 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('NonePackage', $this->view->getPackage());
         $this->view->setPackage('NonePackage');
         $this->assertEquals('NonePackage', $this->view->getPackage());
+    }
+
+    public function testConfig()
+    {
+        $this->assertCount(2, $this->view->getConfig());
+        $this->assertEquals('bar', $this->view->config('foo'));
+        $this->assertNull($this->view->config('invlidkey'));
     }
 
     public function testClassName()

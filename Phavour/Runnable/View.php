@@ -50,9 +50,15 @@ class View
 
     /**
      * An array of variables.
-     * @var string
+     * @var array
      */
     private $runnableVariables = array();
+
+    /**
+     * The config array
+     * @var array
+     */
+    private $config = array();
 
     /**
      * The package name
@@ -195,6 +201,15 @@ class View
     }
 
     /**
+     * Set the config array, called by Application
+     * @param array $config
+     */
+    public function setConfig(array $config)
+    {
+        $this->config = $config;
+    }
+
+    /**
      * Set the real path to the application root folder.
      * @param string $path
      */
@@ -257,6 +272,29 @@ class View
             return $this->runnableVariables[$name];
         }
         return null;
+    }
+
+    /**
+     * Get a config value by specifying the key name
+     * @param string|null $key
+     * @return mixed|null
+     */
+    public function config($key)
+    {
+        if (array_key_exists($key, $this->config)) {
+            return $this->config[$key];
+        }
+
+        return null;
+    }
+
+    /**
+     * Get the entire configuration array
+     * @return array
+     */
+    public function getConfig()
+    {
+        return $this->config;
     }
 
     /**
