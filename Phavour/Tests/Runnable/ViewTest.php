@@ -72,6 +72,10 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('index', $this->view->getMethod());
         $this->view->setScriptName('noSuchMethod');
         $this->assertEquals('noSuchMethod', $this->view->getMethod());
+        $this->assertEquals('noSuchMethod', $this->view->getScriptName());
+        $this->view->setMethod('noSuchMethodAlt');
+        $this->assertEquals('noSuchMethodAlt', $this->view->getMethod());
+        $this->assertEquals('noSuchMethodAlt', $this->view->getScriptName());
     }
 
     public function testMagicMethods()
