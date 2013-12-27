@@ -165,7 +165,7 @@ class Request
             if (isset($headers[$name])) {
                 return $headers[$name];
             }
-            $header = strtolower($header);
+            $header = strtolower($name);
             foreach ($headers as $key => $value) {
                 if (strtolower($key) == $name) {
                     return $value;
