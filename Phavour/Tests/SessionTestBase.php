@@ -30,82 +30,34 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
-
-use Phavour\Cache\AdapterAbstract;
+namespace Phavour\Tests;
 
 /**
- * AdapterNull
+ * SessionTestBase
  */
-class AdapterNull extends AdapterAbstract
+class SessionTestBase extends \PHPUnit_Framework_TestCase
 {
-    /**
-     * Dummy method
-     * @param array $config (optional)
-     */
-    public function __construct(array $config = array())
+    protected function initServerVariables()
     {
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $_SERVER['REQUEST_URI'] = '/';
+        $_SERVER['SERVER_NAME'] = 'localhost';
+        $_SERVER['SERVER_PORT'] = '80';
     }
 
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function get($key)
+    protected function initLoggedOutSession()
     {
-        return false;
+        $_SESSION = array();
+        $_SESSION['__Pf_pb'] = array('store' => array('__Pf_Auth' => array()), 'locks' => array());
+        $_SESSION['__Pf_pr'] = array('store' => array(), 'locks' => array());
+        $_SESSION['__Pf_pb']['store']['__Pf_Auth'] = array('identity' => false, 'roles' => false);
     }
 
-    /**
-     * Dummy method
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function set($key, $value, $ttl = 86400)
+    protected function initLoggedInSession()
     {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     *
-     * @param string $key
-     * @return boolean false
-     */
-    public function has($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function renew($key, $ttl = 86400)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @return boolean false
-     */
-    public function remove($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function flush()
-    {
-        return false;
+        $_SESSION['__Pf_pb'] = array('store' => array('__Pf_Auth' => array()), 'locks' => array('__Pf_Auth' => array()));
+        $_SESSION['__Pf_pr'] = array('store' => array(), 'locks' => array('__Pf_Auth' => array()));
+        $_SESSION['__Pf_pb']['store']['__Pf_Auth'] = array('identity' => array('name' => 'Joe Bloggs', 'age' => 30), 'roles' => array('admin', 'user'));
     }
 }

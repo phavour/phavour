@@ -30,82 +30,35 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
-
-use Phavour\Cache\AdapterAbstract;
+namespace Phavour\Auth;
 
 /**
- * AdapterNull
+ * \Phavour\Auth\AdapterAbstract
+ *
+ * This class provides a simple way of constructing adapters to authenticate a user
+ * @see https://github.com/rogerthomas84/skinny
  */
-class AdapterNull extends AdapterAbstract
+abstract class AdapterAbstract
 {
     /**
-     * Dummy method
-     * @param array $config (optional)
+     * Get the final result
+     * @see Service::PHAVOUR_AUTH_SERVICE_SUCCESS
+     * @see Service::PHAVOUR_AUTH_SERVICE_INVALID
+     * @return integer
      */
-    public function __construct(array $config = array())
-    {
-    }
+    public abstract function getResult();
 
     /**
-     * Dummy method
-     * @return boolean false
+     * Called on return of PHAVOUR_AUTH_SERVICE_SUCCESS to retrieve
+     * the array of user identity
+     * @return array
      */
-    public function get($key)
-    {
-        return false;
-    }
+    public abstract function getIdentity();
 
     /**
-     * Dummy method
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
+     * Called on return of PHAVOUR_AUTH_SERVICE_SUCCESS to retrieve
+     * the array of user roles
+     * @return array
      */
-    public function set($key, $value, $ttl = 86400)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     *
-     * @param string $key
-     * @return boolean false
-     */
-    public function has($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function renew($key, $ttl = 86400)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @return boolean false
-     */
-    public function remove($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function flush()
-    {
-        return false;
-    }
+    public abstract function getRoles();
 }

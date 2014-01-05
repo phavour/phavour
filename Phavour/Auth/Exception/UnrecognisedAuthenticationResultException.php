@@ -30,82 +30,11 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
-
-use Phavour\Cache\AdapterAbstract;
+namespace Phavour\Auth\Exception;
 
 /**
- * AdapterNull
+ * \Phavour\Auth\Exception\UnrecognisedAuthenticationResultException
+ * @see https://github.com/rogerthomas84/skinny
  */
-class AdapterNull extends AdapterAbstract
-{
-    /**
-     * Dummy method
-     * @param array $config (optional)
-     */
-    public function __construct(array $config = array())
-    {
-    }
-
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function get($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function set($key, $value, $ttl = 86400)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     *
-     * @param string $key
-     * @return boolean false
-     */
-    public function has($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function renew($key, $ttl = 86400)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @param string $key
-     * @return boolean false
-     */
-    public function remove($key)
-    {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function flush()
-    {
-        return false;
-    }
-}
+class UnrecognisedAuthenticationResultException extends \Exception
+{}

@@ -30,82 +30,81 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
+namespace Phavour\Tests\Auth\Adapter;
 
-use Phavour\Cache\AdapterAbstract;
+use Phavour\Auth\AdapterAbstract;
+use Phavour\Auth\Service;
 
-/**
- * AdapterNull
- */
-class AdapterNull extends AdapterAbstract
+class TestCaseAdapter extends AdapterAbstract
 {
     /**
-     * Dummy method
-     * @param array $config (optional)
+     * @var array|boolean false
      */
-    public function __construct(array $config = array())
-    {
-    }
+    private $identity = false;
 
     /**
-     * Dummy method
-     * @return boolean false
+     * @var array|boolean false
      */
-    public function get($key)
-    {
-        return false;
-    }
+    private $roles = false;
 
     /**
-     * Dummy method
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
+     * @var string|null
      */
-    public function set($key, $value, $ttl = 86400)
-    {
-        return false;
-    }
+    private $user = null;
 
     /**
-     * Dummy method
-     *
-     * @param string $key
-     * @return boolean false
+     * @var boolean
      */
-    public function has($key)
-    {
-        return false;
-    }
+    private $fakeCode = false;
 
     /**
-     * Dummy method
-     * @param string $key
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
+     * @var string|null
      */
-    public function renew($key, $ttl = 86400)
-    {
-        return false;
-    }
+    private $pass = null;
 
     /**
-     * Dummy method
-     * @param string $key
-     * @return boolean false
+     * @param string $user
+     * @param string $pass
      */
-    public function remove($key)
+    public function setCredentials($user, $pass)
     {
-        return false;
+        $this->user = $user;
+        $this->pass = $pass;
     }
 
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function flush()
+    public function getResult()
     {
-        return false;
+        // fake a credential - DO NOT COPY THIS CLASS INTO PRODUCTION.
+        // SHA! IS NOT SECURE!
+        $shad = sha1('password');
+        if (sha1($this->pass) == $shad && $this->user == 'test@example.com') {
+            $this->identity = array(
+                'user' => 'test@example.com',
+                'password' => $shad
+            );
+            $this->roles = array('user', 'admin');
+            return Service::PHAVOUR_AUTH_SERVICE_SUCCESS;
+        }
+
+        if (!$this->fakeCode) {
+            return Service::PHAVOUR_AUTH_SERVICE_INVALID;
+        }
+
+        return 3; // invalid code, mocked
+    }
+
+    public function setReturnFakeCode()
+    {
+        $this->fakeCode = true;
+    }
+
+    public function getIdentity()
+    {
+        return $this->identity;
+    }
+
+    public function getRoles()
+    {
+        return $this->roles;
     }
 }

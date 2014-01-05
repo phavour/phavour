@@ -30,82 +30,58 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
+namespace Phavour\Tests;
 
-use Phavour\Cache\AdapterAbstract;
+use Phavour\Tests\SessionTestBase;
+use Phavour\Session;
 
 /**
- * AdapterNull
+ * SessionTest
  */
-class AdapterNull extends AdapterAbstract
+class SessionTest extends SessionTestBase
 {
-    /**
-     * Dummy method
-     * @param array $config (optional)
-     */
-    public function __construct(array $config = array())
+    private function reset()
     {
+        return Session::getInstance();
     }
 
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function get($key)
+    public function testRegenerate()
     {
-        return false;
+        $_SESSION = array();
+        $storage = $this->reset();
+        $this->assertTrue($storage->destroy(true));
     }
 
-    /**
-     * Dummy method
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function set($key, $value, $ttl = 86400)
+    public function testSetAndGet()
     {
-        return false;
+        $_SESSION = array();
+        $storage = $this->reset();
+        $this->assertTrue($storage->set('abc', '123'));
+        $this->assertEquals('123', $storage->get('abc'));
     }
 
-    /**
-     * Dummy method
-     *
-     * @param string $key
-     * @return boolean false
-     */
-    public function has($key)
+    public function testRemove()
     {
-        return false;
+        $_SESSION = array();
+        $storage = $this->reset();
+        $storage->set('abc', '123');
+        $this->assertTrue($storage->remove('abc'));
     }
 
-    /**
-     * Dummy method
-     * @param string $key
-     * @param integer $ttl (optional) default 86400
-     * @return boolean false
-     */
-    public function renew($key, $ttl = 86400)
+    public function testRemoveAll()
     {
-        return false;
+        $_SESSION = array();
+        $storage = $this->reset();
+        $storage->set('abc', '123');
+        $this->assertTrue($storage->removeAll());
     }
 
-    /**
-     * Dummy method
-     * @param string $key
-     * @return boolean false
-     */
-    public function remove($key)
+    public function testHeaders()
     {
-        return false;
-    }
-
-    /**
-     * Dummy method
-     * @return boolean false
-     */
-    public function flush()
-    {
-        return false;
+        $_SESSION = array();
+        header("ABC", "123");
+        $storage = $this->reset();
+        $storage->set('abc', '123');
+        $this->assertTrue($storage->removeAll());
     }
 }

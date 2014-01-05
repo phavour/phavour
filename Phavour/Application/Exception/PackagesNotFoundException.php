@@ -2,10 +2,10 @@
 /**
  * Phavour PHP Framework Library
  *
- * @author      Roger Thomas <roger.thomas@rogerethomas.com>
- * @copyright   2013 Roger Thomas
- * @link        http://www.rogerethomas.com
- * @license     http://www.rogerethomas.com/license
+ * @author      Phavour Project
+ * @copyright   2013-2014 Phavour Project
+ * @link        http://phavour-project.com
+ * @license     http://phavour-project.com/license
  * @since       1.0.0
  * @package     Phavour
  *
@@ -35,7 +35,6 @@ namespace Phavour\Application\Exception;
 use Phavour\BaseException;
 
 /**
- * @author Roger Thomas
  * PackagesNotFoundException
  */
 class PackagesNotFoundException extends BaseException
