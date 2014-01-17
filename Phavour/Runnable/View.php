@@ -438,7 +438,7 @@ class View
         }
 
         $package = $this->app->getPackage($this->package);
-        $pathPieces = array($package->getPackagePath(), 'res', 'layout', $file);
+        $pathPieces = array($package['package_path'], 'res', 'layout', $file);
         $path = implode(self::DS, $pathPieces) . '.phtml';
         if (file_exists($path)) {
             $this->layoutLocation = $path;
@@ -461,7 +461,7 @@ class View
         $className = lcfirst($this->class);
 
         $package = $this->app->getPackage($this->package);
-        $pathPieces = array($package->getPackagePath(), 'res', 'view', $className, $methodName);
+        $pathPieces = array($package['package_path'], 'res', 'view', $className, $methodName);
         $path = implode(self::DS, $pathPieces) . '.phtml';
         if (file_exists($path)) {
             return $path;
