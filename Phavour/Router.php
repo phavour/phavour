@@ -50,6 +50,11 @@ class Router
     protected $method = 'GET';
 
     /**
+     * @var string|null
+     */
+    private $ip = null;
+
+    /**
      * @var array
      */
     private $routes = array();
@@ -68,12 +73,29 @@ class Router
     }
 
     /**
+     * @param string $ip
+     */
+    public function setIp($ip)
+    {
+        $this->ip = $ip;
+    }
+
+    /**
      * Get the path provided
      * @return string
      */
     public function getPath()
     {
         return $this->path;
+    }
+
+    /**
+     * Get the ip address
+     * @return string
+     */
+    public function getIp()
+    {
+        return $this->ip;
     }
 
     /**
@@ -130,6 +152,10 @@ class Router
 
             // Does request method match
             if (!$this->methodMatches($route)) {
+                continue;
+            }
+
+            if (false === $this->isAllowed($route)) {
                 continue;
             }
 
@@ -203,6 +229,23 @@ class Router
     }
 
     /**
+     * Check if a route is allowed to access based on the 'allow' key
+     * @param array $route
+     * @return array|boolean false
+     */
+    private function isAllowed(array $route)
+    {
+        if (empty($route['allow']['from'])) {
+            return true;
+        }
+
+        $from = $route['allow']['from'];
+        $pieces = explode('|', $route['allow']['from']);
+
+        return in_array($this->ip, $pieces);
+    }
+
+    /**
      * Validate if a route matches based on parameters
      * @param array $route
      * @return array|boolean false
@@ -250,6 +293,14 @@ class Router
 
         if (!array_key_exists('method', $route)) {
             $route['method'] = 'GET';
+        }
+
+        if (!array_key_exists('allow', $route)) {
+            $route['allow'] = array();
+        }
+
+        if (!array_key_exists('from', $route['allow'])) {
+            $route['allow']['from'] = '';
         }
 
         $route['method'] = strtoupper($route['method']);

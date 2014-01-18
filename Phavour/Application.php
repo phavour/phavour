@@ -180,6 +180,7 @@ class Application
         $this->router->setRoutes($this->routes);
         $this->router->setMethod($this->request->getRequestMethod());
         $this->router->setPath($this->request->getRequestUri());
+        $this->router->setIp($this->request->getClientIp());
         try {
             $route = $this->router->getRoute();
         } catch (RouteNotFoundException $e) {
