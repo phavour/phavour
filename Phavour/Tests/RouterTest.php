@@ -77,6 +77,13 @@ class RouterTest extends \PHPUnit_Framework_TestCase
             'index_postputdelete_name' => array(
                 'method' => 'POST|PUT|DELETE',
                 'path' => '/user/{name}',
+            ),
+            'index_allowed_ip' => array(
+                'method' => 'GET',
+                'path' => '/auth/ip/allow',
+                'allow' => array(
+                    'from' => '127.0.0.1'
+                )
             )
         );
 
@@ -89,9 +96,11 @@ class RouterTest extends \PHPUnit_Framework_TestCase
         $this->router->setMethod('GET');
         $this->router->setPath('/');
         $this->router->setRoutes($this->routes);
+        $this->router->setIp('127.0.0.1');
         $this->assertEquals('GET', $this->router->getMethod());
         $this->assertEquals('/', $this->router->getPath());
         $this->assertEquals($this->routes, $this->router->getRoutes());
+        $this->assertEquals('127.0.0.1', $this->router->getIp());
     }
 
     public function testDirectMatch()
@@ -151,6 +160,30 @@ class RouterTest extends \PHPUnit_Framework_TestCase
     {
         $this->router->setPath('/this/doesnt/exist');
         $this->router->setMethod('GET');
+        try {
+            $this->router->getRoute();
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+            return;
+        }
+
+        $this->fail('Failed asserting Exception for invalid route.');
+    }
+
+    public function testRouteAllowedByIp()
+    {
+        $this->router->setPath('/auth/ip/allow');
+        $this->router->setMethod('GET');
+        $this->router->setIp('127.0.0.1');
+        $route = $this->router->getRoute();
+        $this->assertEquals('127.0.0.1', $route['allow']['from']);
+    }
+
+    public function testRouteNotAllowedByIp()
+    {
+        $this->router->setPath('/auth/ip/allow');
+        $this->router->setMethod('GET');
+        $this->router->setIp('111.111.111.111');
         try {
             $this->router->getRoute();
         } catch (\Exception $e) {
