@@ -35,7 +35,7 @@
     
     <filter>
         <whitelist>
-            <directory>Phavour/*</directory>
+            <directory>Phavour</directory>
             <exclude>
                 <directory>Phavour/Tests</directory>
                 <directory>vendor/*</directory>
