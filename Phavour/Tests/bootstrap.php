@@ -9,3 +9,7 @@ if (!function_exists('header_remove')) {
 }
 
 require 'autoload.php';
+
+$appPackages = array(
+    new Phavour\PhavourTests\DefaultPackage\Package(),
+);

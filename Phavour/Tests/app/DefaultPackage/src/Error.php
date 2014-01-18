@@ -30,25 +30,30 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace DefaultPackage\src;
+namespace Phavour\PhavourTests\DefaultPackage\src;
 
 use Phavour\Runnable;
-use Phavour\DebuggableException;
 
-class Index extends Runnable
+class Error extends Runnable
 {
     public function init()
     {
-        if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-            $e = new DebuggableException('You can only access this method from 127.0.0.1');
-            $e->setAdditionalData('Reason', 'Coded check of IP at: ' . __METHOD__);
-            throw $e;
-        }
+
     }
 
-    public function index()
+    /**
+     * Called upon a 404
+     */
+    public function notFound()
     {
-        $this->view->data = 'I\'m from the runnable!';
-        $this->view->setLayout('default.phtml');
+
+    }
+
+    /**
+     * Called upon an error during boot, or an uncaught exception in a runnable
+     */
+    public function uncaughtException()
+    {
+
     }
 }

@@ -45,16 +45,25 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
      */
     private $app = null;
 
+    /**
+     * @var \Phavour\Package[]
+     */
+    private $packages = array();
+
     public function setUp()
     {
-        $this->app = new Application(APP_BASE);
+        /** @var \Phavour\Package[] $appPackages */
+        global $appPackages;
+        $this->packages = $appPackages;
+
+        $this->app = new Application(APP_BASE, $this->packages);
         $this->app->setCacheAdapter(new AdapterNull());
     }
 
     public function testCantUseCacheFirst()
     {
         @ob_start();
-        $app = new Application(APP_BASE);
+        $app = new Application(APP_BASE, $this->packages);
         $app->setup();
         $app->setCacheAdapter(new AdapterNull());
         $content = @ob_get_clean();

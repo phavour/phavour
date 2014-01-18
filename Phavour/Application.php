@@ -171,9 +171,9 @@ class Application
      */
     public function run()
     {
-        if (empty($this->packages)) {
+        if (empty($this->packagesMetadata)) {
             $this->setup();
-            if (empty($this->packages)) {
+            if (empty($this->packagesMetadata)) {
                 // @codeCoverageIgnoreStart
                 $e = new PackagesNotFoundException('Application has no packages.');
                 $e->setAdditionalData('Application Path', $this->appDirectory);
@@ -195,7 +195,7 @@ class Application
             return;
         }
 
-        $package = $this->packages[$route['package']];
+        $package = $this->getPackage($route['package']);
         $runnable = $route['runnable'];
         $runnables = explode('::', $runnable);
         $classString = $package['namespace'] . '\\src\\' . $runnables[0];
@@ -227,7 +227,7 @@ class Application
      */
     public function getPackage($package)
     {
-        if (array_key_exists($package, $this->packages)) {
+        if (array_key_exists($package, $this->packagesMetadata)) {
             return $this->packagesMetadata[$package];
         }
 
@@ -269,7 +269,7 @@ class Application
 
         $config = array();
 
-        foreach ($this->packages as $package) {
+        foreach ($this->packagesMetadata as $package) {
             try {
                 $finder = new FromArray($package['config_path']);
                 $proposedConfig = $finder->getArrayWhereKeysBeginWith($package['package_name']);
@@ -312,7 +312,7 @@ class Application
         }
 
         $routes = array();
-        foreach ($this->packages as $package) {
+        foreach ($this->packagesMetadata as $package) {
             try {
                 $finder = new FromArray($package['route_path']);
                 $proposedRoutes = $finder->getArray();

@@ -30,30 +30,16 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace DefaultPackage\src;
+namespace Phavour\PhavourTests\DefaultPackage;
 
-use Phavour\Runnable;
-
-class Error extends Runnable
+/**
+ * Package
+ */
+class Package extends \Phavour\Package
 {
-    public function init()
+    public function __construct()
     {
-
-    }
-
-    /**
-     * Called upon a 404
-     */
-    public function notFound()
-    {
-
-    }
-
-    /**
-     * Called upon an error during boot, or an uncaught exception in a runnable
-     */
-    public function uncaughtException()
-    {
-
+        $this->dir = __DIR__;
+        $this->namespace = __NAMESPACE__;
     }
 }

@@ -45,15 +45,22 @@ use Phavour\Router;
 class RunnableTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var \Phavour\Application|null
+     */
+    private $app = null;
+
+    /**
      * @var ClassExample
      */
     private $runnable = null;
 
     public function setUp()
     {
+        $this->app = $this->getMockBuilder('Phavour\\Application')->disableOriginalConstructor()->getMock();
+
         $request = new Request();
         $response = new Response();
-        $view = new View('test', 'test', 'none');
+        $view = new View($this->app, 'test', 'test', 'none');
         $env = new Environment();
         $router = new Router();
         $this->runnable = new ClassExample($request, $response, $view, $env, null, $router);
@@ -99,7 +106,7 @@ class RunnableTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('abc.123', $this->runnable->urlFor('abc.123'));
         $request = new Request();
         $response = new Response();
-        $view = new View('test', 'test', 'none');
+        $view = new View($this->app, 'test', 'test', 'none');
         $env = new Environment();
         $testEmpty = new ClassExample($request, $response, $view, $env, null, null);
         $this->assertEmpty($testEmpty->urlFor('abc.123'));
