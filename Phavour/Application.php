@@ -155,13 +155,13 @@ class Application
         }
         $this->loadPackages();
         $this->loadConfig();
+        // @codeCoverageIgnoreStart
         if (array_key_exists('ini.set', $this->config)) {
             foreach ($this->config['ini.set'] as $iniName => $iniValue) {
-                // @codeCoverageIgnoreStart
                 ini_set($iniName, $iniValue);
-                // @codeCoverageIgnoreEnd
             }
         }
+        // @codeCoverageIgnoreEnd
         $this->loadRoutes();
         $this->isSetup = true;
     }

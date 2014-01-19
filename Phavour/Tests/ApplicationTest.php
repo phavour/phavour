@@ -96,4 +96,15 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $content = @ob_get_clean();
         $this->assertContains('Welcome to Phavour', $content);
     }
+
+    public function testInvalidPackage()
+    {
+        try {
+            $this->app->getPackage('foobar');
+        } catch (\Exception $e) {
+            $this->assertInstanceOf('\Phavour\Application\Exception\PackageNotFoundException', $e);
+            return;
+        }
+        $this->fail('expected exception');
+    }
 }
