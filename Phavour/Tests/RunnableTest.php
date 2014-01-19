@@ -63,7 +63,7 @@ class RunnableTest extends \PHPUnit_Framework_TestCase
         $view = new View($this->app, 'test', 'test', 'none');
         $env = new Environment();
         $router = new Router();
-        $this->runnable = new ClassExample($request, $response, $view, $env, null, $router);
+        $this->runnable = new ClassExample($request, $response, $view, $env, null, $router, array('foo' => 'bar'));
     }
 
     public function testInit()
@@ -74,6 +74,21 @@ class RunnableTest extends \PHPUnit_Framework_TestCase
     public function testIsConstructed()
     {
         $this->assertTrue($this->runnable->isConstructed());
+    }
+
+    public function testGetConfig()
+    {
+        $this->assertTrue(is_array($this->runnable->getConfig()));
+    }
+
+    public function testGetConfigKeyWhichDoesNotExist()
+    {
+        $this->assertNull($this->runnable->config('foobar'));
+    }
+
+    public function testConfigKeyEqualsExpectedBar()
+    {
+        $this->assertEquals('bar', $this->runnable->config('foo'));
     }
 
     public function testGetCacheAdapter()
@@ -110,5 +125,11 @@ class RunnableTest extends \PHPUnit_Framework_TestCase
         $env = new Environment();
         $testEmpty = new ClassExample($request, $response, $view, $env, null, null);
         $this->assertEmpty($testEmpty->urlFor('abc.123'));
+    }
+
+    public function testNotFoundRoute()
+    {
+        $this->runnable->notFound();
+        $this->assertEquals(404, $this->runnable->getResponse()->getStatus());
     }
 }
