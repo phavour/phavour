@@ -337,11 +337,11 @@ class Application
             $appRoutes = $finder->getArray();
             if (is_array($appRoutes)) {
                 foreach ($appRoutes as $routeDetails) {
+                    // @codeCoverageIgnoreStart
                     if (!array_key_exists('package', $routeDetails)) {
-                        // @codeCoverageIgnoreStart
                         throw new RouteMissingPackageNameException();
-                        // @codeCoverageIgnoreEnd
                     }
+                    // @codeCoverageIgnoreEnd
                 }
                 $routes = array_merge($routes, $appRoutes);
             }

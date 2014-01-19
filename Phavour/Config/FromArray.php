@@ -63,7 +63,7 @@ class FromArray
     public function getArray()
     {
         $config = @include $this->location;
-        if (!$config || !is_array($config)) {
+        if (!is_array($config)) {
             throw new \Exception('Config not found');
         }
 
