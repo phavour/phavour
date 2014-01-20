@@ -50,6 +50,11 @@ class Router
     protected $method = 'GET';
 
     /**
+     * @var Auth|null
+     */
+    private $auth = null;
+
+    /**
      * @var string|null
      */
     private $ip = null;
@@ -155,8 +160,14 @@ class Router
                 continue;
             }
 
-            if (false === $this->isAllowed($route)) {
+            if (false === $this->isAllowedByIp($route)) {
                 continue;
+            }
+
+            if (false === $this->isAllowedByRole($route)) {
+                // @codeCoverageIgnoreStart
+                continue;
+                // @codeCoverageIgnoreEnd
             }
 
             if (false != ($match = $this->isDirectMatch($route))) {
@@ -229,20 +240,50 @@ class Router
     }
 
     /**
-     * Check if a route is allowed to access based on the 'allow' key
+     * Check if a route is allowed to access based on the ['allow']['from'] key
      * @param array $route
      * @return array|boolean false
      */
-    private function isAllowed(array $route)
+    private function isAllowedByIp(array $route)
     {
         if (empty($route['allow']['from'])) {
             return true;
         }
 
         $from = $route['allow']['from'];
-        $pieces = explode('|', $route['allow']['from']);
+        $pieces = explode('|', $from);
 
         return in_array($this->ip, $pieces);
+    }
+
+    /**
+     * Check if a route is allowed to access based on the ['allow']['roles'] key
+     * @param array $route
+     * @return array|boolean false
+     */
+    private function isAllowedByRole(array $route)
+    {
+        if (empty($route['allow']['roles'])) {
+            return true;
+        }
+
+        // @codeCoverageIgnoreStart
+        // @TODO This works but not in a unit test.
+        if (null === $this->auth) {
+            $this->auth = Auth::getInstance();
+        }
+
+        $roles = $route['allow']['roles'];
+        $pieces = explode('|', $roles);
+
+        foreach ($pieces as $piece) {
+            if ($this->auth->hasRole($piece)) {
+                return true;
+            }
+        }
+
+        return false;
+        // @codeCoverageIgnoreEnd
     }
 
     /**
@@ -301,6 +342,10 @@ class Router
 
         if (!array_key_exists('from', $route['allow'])) {
             $route['allow']['from'] = '';
+        }
+
+        if (!array_key_exists('roles', $route['allow'])) {
+            $route['allow']['roles'] = '';
         }
 
         $route['method'] = strtoupper($route['method']);
