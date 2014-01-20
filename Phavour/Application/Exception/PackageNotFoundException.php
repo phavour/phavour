@@ -30,25 +30,21 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace DefaultPackage\src;
+namespace Phavour\Application\Exception;
 
-use Phavour\Runnable;
-use Phavour\DebuggableException;
+use Phavour\BaseException;
 
-class Index extends Runnable
+/**
+ * PackageNotFoundException
+ */
+class PackageNotFoundException extends BaseException
 {
-    public function init()
+    /**
+     * @param string $package
+     */
+    public function setPackage($package)
     {
-        if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-            $e = new DebuggableException('You can only access this method from 127.0.0.1');
-            $e->setAdditionalData('Reason', 'Coded check of IP at: ' . __METHOD__);
-            throw $e;
-        }
-    }
-
-    public function index()
-    {
-        $this->view->data = 'I\'m from the runnable!';
-        $this->view->setLayout('default.phtml');
+        $this->message = 'Invalid package name, expected : "'. $package .'"';
+        $this->setAdditionalData('Package missing: ', $package);
     }
 }

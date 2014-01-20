@@ -42,13 +42,23 @@ use Phavour\Router;
 class ViewTest extends \PHPUnit_Framework_TestCase
 {
     /**
+     * @var \Phavour\Application|null
+     */
+    private $app = null;
+
+    /**
      * @var View
      */
     private $view = null;
 
     public function setUp()
     {
-        $this->view = new View('DefaultPackage', 'Index', 'index');
+        global $appPackages;
+
+        $this->app = new \Phavour\Application(APP_BASE, $appPackages);
+        $this->app->setup();
+
+        $this->view = new View($this->app, 'DefaultPackage', 'Index', 'index');
         $this->view->setConfig(
             array(
                 'foo' => 'bar',
@@ -106,11 +116,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $this->assertNull($this->view->get('age'));
     }
 
-    public function testApplicationPath()
-    {
-        $this->view->setApplicationPath('/example/path');
-        $this->assertEquals('/example/path', $this->view->getApplicationPath());
-    }
 
     public function testEnableDisabled()
     {
@@ -122,7 +127,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
 
     public function testRender()
     {
-        $this->view = new View('TestPackage', 'UserTest', 'name');
+        $this->view = new View($this->app, 'TestPackage', 'UserTest', 'name');
         $this->view->disableView();
         $this->assertTrue($this->view->render());
     }
@@ -130,7 +135,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testRenderContains()
     {
         $this->view->setResponse(new Response());
-        $this->view->setApplicationPath(APP_BASE);
         $this->view->data = 'joe';
         @ob_start();
         $this->view->render('index', 'Index', 'DefaultPackage');
@@ -141,7 +145,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testLayoutContains()
     {
         $this->view->setResponse(new Response());
-        $this->view->setApplicationPath(APP_BASE);
         $this->view->data = '123';
         @ob_start();
         $this->view->setLayout('DefaultPackage::default');
@@ -153,7 +156,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testLayoutNoPackage()
     {
         $this->view->setResponse(new Response());
-        $this->view->setApplicationPath(APP_BASE);
         $this->view->data = 'abc';
         @ob_start();
         $this->view->setLayout('default');
@@ -165,10 +167,9 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testRenderInvalid()
     {
         $this->view->setResponse(new Response());
-        $this->view->setApplicationPath(APP_BASE);
         $this->view->name = 'abc';
         try {
-            $this->view->render('namae', 'UserTest', 'TestPackage');
+            $this->view->render('namae', 'UserTest', 'DefaultPackage');
         } catch (\Exception $e) {
             $this->assertInstanceOf('\Phavour\Runnable\View\Exception\ViewFileNotFoundException', $e);
             $this->assertContains('Invalid view file', $e->getMessage());
@@ -180,7 +181,6 @@ class ViewTest extends \PHPUnit_Framework_TestCase
     public function testRenderInvalidLayout()
     {
         $this->view->setResponse(new Response());
-        $this->view->setApplicationPath(APP_BASE);
         $this->view->name = 'abc';
         try {
             $this->view->setLayout('nosuchlayout');

@@ -30,61 +30,16 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
+namespace Phavour\PhavourTests\DefaultPackage;
 
 /**
- * AdapterAbstract
+ * Package
  */
-abstract class AdapterAbstract
+class Package extends \Phavour\Package
 {
-    /**
-     * Construct, giving the configuration
-     * @param array $config
-     */
-    abstract function __construct(array $config);
-
-    /**
-     * Get a cached value by key
-     * @param mixed $key
-     * @return mixed|boolean false
-     */
-    abstract function get($key);
-
-    /**
-     * Set a cache value
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl
-     * @return boolean
-     */
-    abstract function set($key, $value, $ttl);
-
-    /**
-     * Check if a cached key exists.
-     * If you require a returned value, call get($key) instead.
-     * @param string $key
-     * @return boolean
-     */
-    abstract function has($key);
-
-    /**
-     * Renew a cached item by key
-     * @param string $key
-     * @param integer $ttl
-     * @return boolean
-     */
-    abstract function renew($key, $ttl);
-
-    /**
-     * Remove a cached value by key.
-     * @param string $key
-     * @return boolean
-     */
-    abstract function remove($key);
-
-    /**
-     * Flush all existing Cache
-     * @return boolean
-     */
-    abstract function flush();
+    public function __construct()
+    {
+        $this->dir = __DIR__;
+        $this->namespace = __NAMESPACE__;
+    }
 }

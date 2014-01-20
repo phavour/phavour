@@ -34,6 +34,7 @@ namespace Phavour;
 
 use Phavour\Application\Environment;
 use Phavour\Application\Exception\PackagesNotFoundException;
+use Phavour\Application\Exception\PackageNotFoundException;
 use Phavour\Application\Exception\RunnableNotFoundException;
 use Phavour\Config\FromArray;
 use Phavour\Debug\FormattedException;
@@ -63,10 +64,14 @@ class Application
     protected $env = null;
 
     /**
-     * PackageName => PackageLocation
      * @var array
      */
     protected $packages = array();
+
+    /**
+     * @var array
+     */
+    protected $packagesMetadata = array();
 
     /**
      * @var array
@@ -111,10 +116,12 @@ class Application
     /**
      * Construct, giving the realpath to the application root folder.
      * @param string $appDirectory
+     * @param array $packages
      */
-    public function __construct($appDirectory)
+    public function __construct($appDirectory, array $packages)
     {
         $this->appDirectory = $appDirectory;
+        $this->packages = $packages;
     }
 
     /**
@@ -148,13 +155,13 @@ class Application
         }
         $this->loadPackages();
         $this->loadConfig();
+        // @codeCoverageIgnoreStart
         if (array_key_exists('ini.set', $this->config)) {
             foreach ($this->config['ini.set'] as $iniName => $iniValue) {
-                // @codeCoverageIgnoreStart
                 ini_set($iniName, $iniValue);
-                // @codeCoverageIgnoreEnd
             }
         }
+        // @codeCoverageIgnoreEnd
         $this->loadRoutes();
         $this->isSetup = true;
     }
@@ -164,9 +171,9 @@ class Application
      */
     public function run()
     {
-        if (empty($this->packages)) {
+        if (empty($this->packagesMetadata)) {
             $this->setup();
-            if (empty($this->packages)) {
+            if (empty($this->packagesMetadata)) {
                 // @codeCoverageIgnoreStart
                 $e = new PackagesNotFoundException('Application has no packages.');
                 $e->setAdditionalData('Application Path', $this->appDirectory);
@@ -187,13 +194,14 @@ class Application
             $this->notFound($e);
             return;
         }
-        $package = $route['package'];
+
+        $package = $this->getPackage($route['package']);
         $runnable = $route['runnable'];
         $runnables = explode('::', $runnable);
-        $classString = '\\' . $package . '\\src\\' . $runnables[0];
+        $classString = $package['namespace'] . '\\src\\' . $runnables[0];
         if (class_exists($classString)) {
             try {
-                $instance = $this->getRunnable($package, $runnables[0], $runnables[1], $classString);
+                $instance = $this->getRunnable($package['package_name'], $runnables[0], $runnables[1], $classString);
                 if (is_callable(array($instance, $runnables[1]))) {
                     call_user_func_array(array($instance, $runnables[1]), $route['params']);
                     $instance->finalise();
@@ -213,28 +221,36 @@ class Application
     // @codeCoverageIgnoreEnd
 
     /**
-     * Load and assign the packages array to the
-     * name => filePath format.
+     * @param string $package
+     * @throws PackageNotFoundException
+     * @return array Metadata of the package
+     */
+    public function getPackage($package)
+    {
+        if (array_key_exists($package, $this->packagesMetadata)) {
+            return $this->packagesMetadata[$package];
+        }
+
+        $e = new PackageNotFoundException();
+        $e->setPackage($package);
+        throw $e;
+    }
+
+    /**
+     * Load the package metadata from the given list
      */
     private function loadPackages()
     {
-        $cacheName = $this->mode . '_Phavour_Application_packages';
-        if (false != ($packages = $this->cache->get($cacheName))) {
-            // @codeCoverageIgnoreStart
-            $this->packages = $packages;
-            return;
-            // @codeCoverageIgnoreEnd
+        foreach ($this->packages as $package) {
+            /** @var $package \Phavour\Package */
+            $this->packagesMetadata[$package->getPackageName()] = array(
+                'namespace' => $package->getNamespace(),
+                'route_path' => $package->getRoutePath(),
+                'config_path' => $package->getConfigPath(),
+                'package_path' => $package->getPackagePath(),
+                'package_name' => $package->getPackageName()
+            );
         }
-
-        $found = scandir($this->appDirectory . DIRECTORY_SEPARATOR . 'src');
-        foreach ($found as $packageName) {
-            $packagePath = $this->appDirectory . DIRECTORY_SEPARATOR . 'src' . DIRECTORY_SEPARATOR . $packageName;
-            if (substr($packageName, -7) == 'Package' && is_dir($packagePath)) {
-                $this->packages[$packageName] = $packagePath;
-            }
-        }
-
-        $this->cache->set($cacheName, $this->packages, 86400);
     }
 
     /**
@@ -252,12 +268,11 @@ class Application
         }
 
         $config = array();
-        foreach ($this->packages as $packageName => $packageLocation) {
+
+        foreach ($this->packagesMetadata as $package) {
             try {
-                $finder = new FromArray(
-                    $packageLocation . DIRECTORY_SEPARATOR . 'res' . DIRECTORY_SEPARATOR . 'config.php'
-                );
-                $proposedConfig = $finder->getArrayWhereKeysBeginWith($packageName);
+                $finder = new FromArray($package['config_path']);
+                $proposedConfig = $finder->getArrayWhereKeysBeginWith($package['package_name']);
                 if (is_array($proposedConfig)) {
                     $config = array_merge($config, $proposedConfig);
                 }
@@ -297,18 +312,16 @@ class Application
         }
 
         $routes = array();
-        foreach ($this->packages as $packageName => $packageLocation) {
+        foreach ($this->packagesMetadata as $package) {
             try {
-                $finder = new FromArray(
-                    $packageLocation . DIRECTORY_SEPARATOR . 'res' . DIRECTORY_SEPARATOR . 'routes.php'
-                );
+                $finder = new FromArray($package['route_path']);
                 $proposedRoutes = $finder->getArray();
                 if (is_array($proposedRoutes)) {
                     foreach ($proposedRoutes as $key => $routeDetails) {
                         if (!array_key_exists('package', $routeDetails)) {
-                            $proposedRoutes[$key]['package'] = $packageName;
+                            $proposedRoutes[$key]['package'] = $package['package_name'];
                         }
-                        $proposedRoutes[$key]['package'] = $packageName;
+                        $proposedRoutes[$key]['package'] = $package['package_name'];
                     }
                     $routes = array_merge($routes, $proposedRoutes);
                 }
@@ -323,12 +336,12 @@ class Application
             );
             $appRoutes = $finder->getArray();
             if (is_array($appRoutes)) {
-                foreach ($appRoutes as $key => $routeDetails) {
+                foreach ($appRoutes as $routeDetails) {
+                    // @codeCoverageIgnoreStart
                     if (!array_key_exists('package', $routeDetails)) {
-                        // @codeCoverageIgnoreStart
                         throw new RouteMissingPackageNameException();
-                        // @codeCoverageIgnoreEnd
                     }
+                    // @codeCoverageIgnoreEnd
                 }
                 $routes = array_merge($routes, $appRoutes);
             }
@@ -435,30 +448,23 @@ class Application
      */
     private function getErrorClass()
     {
-        if (!array_key_exists('DefaultPackage', $this->packages)) {
+        try {
+            $package = $this->getPackage('DefaultPackage');
+        } catch (PackageNotFoundException $e) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        $pathToDefaultPackage = $this->packages['DefaultPackage'];
-        $ds = DIRECTORY_SEPARATOR;
-        $errorClassPath = $pathToDefaultPackage . $ds . 'src' . $ds . 'Error.php';
-        if (!file_exists($errorClassPath)) {
+        $controller = $package['namespace'] . '\\src\\Error';
+
+        if (!class_exists($controller)) {
             // @codeCoverageIgnoreStart
             return false;
             // @codeCoverageIgnoreEnd
         }
 
-        $className = '\\DefaultPackage\\src\\Error';
-
-        if (!class_exists($className)) {
-            // @codeCoverageIgnoreStart
-            return false;
-            // @codeCoverageIgnoreEnd
-        }
-
-        return $className;
+        return $controller;
     }
 
     /**
@@ -488,8 +494,7 @@ class Application
      */
     private function getViewFor($package, $class, $method)
     {
-        $view = new View($package, $class, $method);
-        $view->setApplicationPath($this->appDirectory);
+        $view = new View($this, $package, $class, $method);
         $view->setRouter($this->router);
         $view->setConfig($this->config);
 

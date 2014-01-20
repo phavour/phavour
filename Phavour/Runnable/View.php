@@ -36,6 +36,7 @@ use Phavour\Http\Response;
 use Phavour\Runnable\View\Exception\ViewFileNotFoundException;
 use Phavour\Runnable\View\Exception\LayoutFileNotFoundException;
 use Phavour\Router;
+use Phavour\Application;
 
 /**
  * View
@@ -46,6 +47,11 @@ class View
      * @var string
      */
     const DS = DIRECTORY_SEPARATOR;
+
+    /**
+     * @var Application $app
+     */
+    private $app;
 
     /**
      * An array of variables.
@@ -102,12 +108,6 @@ class View
     private $method = null;
 
     /**
-     * The application path.
-     * @var string|null
-     */
-    private $appPath = null;
-
-    /**
      * Whether a view is enabled
      * @var boolean
      */
@@ -120,12 +120,14 @@ class View
 
     /**
      * Construct giving the details of the route
+     * @param Application $app
      * @param string $package
      * @param string $class
      * @param string $method
      */
-    public function __construct($package, $class, $method)
+    public function __construct(Application $app, $package, $class, $method)
     {
+        $this->app = $app;
         $this->package = $this->treatPackageName($package);
         $this->class = $class;
         $this->method = $method;
@@ -182,15 +184,6 @@ class View
     }
 
     /**
-     * Get the real path to the application
-     * @return string
-     */
-    public function getApplicationPath()
-    {
-        return $this->appPath;
-    }
-
-    /**
      * Set the package name
      * @param string $package
      */
@@ -218,15 +211,6 @@ class View
     public function setConfig(array $config)
     {
         $this->config = $config;
-    }
-
-    /**
-     * Set the real path to the application root folder.
-     * @param string $path
-     */
-    public function setApplicationPath($path)
-    {
-        $this->appPath = $path;
     }
 
     /**
@@ -388,8 +372,7 @@ class View
             $package = $this->package;
         }
 
-        $file = $this->assignDeclaredLayout($package, $file);
-
+        $this->assignDeclaredLayout($package, $file);
     }
 
     /**
@@ -443,7 +426,8 @@ class View
      * Assign the path to the layout file
      * @param string $package
      * @param string $file
-     * @throws \Exception
+     * @throws LayoutFileNotFoundException
+     * @throws \Phavour\Application\Exception\PackageNotFoundException
      * @return boolean
      */
     private function assignDeclaredLayout($package, $file)
@@ -452,7 +436,9 @@ class View
         if (substr(strtolower($file), -6) == '.phtml') {
             $file = substr($file, 0, -6);
         }
-        $pathPieces = array($this->appPath, 'src', $package, 'res', 'layout', $file);
+
+        $package = $this->app->getPackage($this->package);
+        $pathPieces = array($package['package_path'], 'res', 'layout', $file);
         $path = implode(self::DS, $pathPieces) . '.phtml';
         if (file_exists($path)) {
             $this->layoutLocation = $path;
@@ -465,14 +451,17 @@ class View
 
     /**
      * Get the path for a view file.
-     * @throws \Exception
+     * @throws \Phavour\Application\Exception\PackageNotFoundException
+     * @throws ViewFileNotFoundException
      * @return string
      */
     private function getPathForView()
     {
         $methodName = lcfirst($this->method);
         $className = lcfirst($this->class);
-        $pathPieces = array($this->appPath, 'src', $this->package, 'res', 'view', $className, $methodName);
+
+        $package = $this->app->getPackage($this->package);
+        $pathPieces = array($package['package_path'], 'res', 'view', $className, $methodName);
         $path = implode(self::DS, $pathPieces) . '.phtml';
         if (file_exists($path)) {
             return $path;

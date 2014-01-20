@@ -45,16 +45,25 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
      */
     private $app = null;
 
+    /**
+     * @var \Phavour\Package[]
+     */
+    private $packages = array();
+
     public function setUp()
     {
-        $this->app = new Application(APP_BASE);
+        /** @var \Phavour\Package[] $appPackages */
+        global $appPackages;
+        $this->packages = $appPackages;
+
+        $this->app = new Application(APP_BASE, $this->packages);
         $this->app->setCacheAdapter(new AdapterNull());
     }
 
     public function testCantUseCacheFirst()
     {
         @ob_start();
-        $app = new Application(APP_BASE);
+        $app = new Application(APP_BASE, $this->packages);
         $app->setup();
         $app->setCacheAdapter(new AdapterNull());
         $content = @ob_get_clean();
@@ -86,5 +95,16 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $result = $this->app->run();
         $content = @ob_get_clean();
         $this->assertContains('Welcome to Phavour', $content);
+    }
+
+    public function testInvalidPackage()
+    {
+        try {
+            $this->app->getPackage('foobar');
+        } catch (\Exception $e) {
+            $this->assertInstanceOf('\Phavour\Application\Exception\PackageNotFoundException', $e);
+            return;
+        }
+        $this->fail('expected exception');
     }
 }

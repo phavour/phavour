@@ -90,6 +90,7 @@ class AdapterMemcache extends AdapterAbstract
 
     /**
      * Get a value from cache
+     * @param string $key
      * @return mixed|boolean false
      */
     public function get($key)

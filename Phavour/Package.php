@@ -30,61 +30,60 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\Cache;
+namespace Phavour;
 
 /**
- * AdapterAbstract
+ * Package
  */
-abstract class AdapterAbstract
+abstract class Package
 {
     /**
-     * Construct, giving the configuration
-     * @param array $config
+     * @var string
      */
-    abstract function __construct(array $config);
+    protected $dir = '';
 
     /**
-     * Get a cached value by key
-     * @param mixed $key
-     * @return mixed|boolean false
+     * @var string
      */
-    abstract function get($key);
+    protected $namespace = '';
 
     /**
-     * Set a cache value
-     * @param string $key
-     * @param mixed $value
-     * @param integer $ttl
-     * @return boolean
+     * @return string
      */
-    abstract function set($key, $value, $ttl);
+    public function getConfigPath()
+    {
+        return $this->dir . '/res/config.php';
+    }
 
     /**
-     * Check if a cached key exists.
-     * If you require a returned value, call get($key) instead.
-     * @param string $key
-     * @return boolean
+     * @return string
      */
-    abstract function has($key);
+    public function getRoutePath()
+    {
+        return $this->dir . '/res/routes.php';
+    }
 
     /**
-     * Renew a cached item by key
-     * @param string $key
-     * @param integer $ttl
-     * @return boolean
+     * @return string
      */
-    abstract function renew($key, $ttl);
+    public function getPackageName()
+    {
+        return basename($this->dir);
+    }
 
     /**
-     * Remove a cached value by key.
-     * @param string $key
-     * @return boolean
+     * @return string
      */
-    abstract function remove($key);
+    public function getNamespace()
+    {
+        return $this->namespace;
+    }
 
     /**
-     * Flush all existing Cache
-     * @return boolean
+     * @return string
      */
-    abstract function flush();
+    public function getPackagePath()
+    {
+        return $this->dir;
+    }
 }
