@@ -192,10 +192,10 @@ class Storage {
     public function remove($name)
     {
         $this->_validate();
-        if (!$this->get($name)) {
-            return true;
-        }
         if (!$this->isLocked()) {
+            if (!$this->get($name)) {
+                return true;
+            }
             unset($_SESSION[$this->publicStorage]['store'][$this->_namespaceName][$name]);
             return true;
         }
