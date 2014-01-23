@@ -30,30 +30,44 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\PhavourTests\DefaultPackage\src;
+namespace Phavour\Middleware;
 
-use Phavour\Runnable;
-use Phavour\DebuggableException;
+use Phavour\Http\Response;
+use Phavour\Http\Request;
 
-class Index extends Runnable
+/**
+ * \Phavour\Middleware\MiddlewareAbstract
+ */
+abstract class MiddlewareAbstract
 {
-    public function init()
+    /**
+     * @var Request|null
+     */
+    protected $request = null;
+
+    /**
+     * @var Response|null
+     */
+    protected $response = null;
+
+    /**
+     * Constructor which passes Request and Response
+     * @param Request $request
+     * @param Response $response
+     */
+    final public function __construct(Request $request, Response $response)
     {
-        if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-            $e = new DebuggableException('You can only access this method from 127.0.0.1');
-            $e->setAdditionalData('Reason', 'Coded check of IP at: ' . __METHOD__);
-            throw $e;
-        }
+        $this->request = $request;
+        $this->response = $response;
     }
 
-    public function index()
-    {
-        $this->view->data = 'I\'m from the runnable!';
-        $this->view->setLayout('default.phtml');
-    }
+    /**
+     * Called prior to the runnable construction
+     */
+    public abstract function onBefore();
 
-    public function middleware()
-    {
-        $this->view->disableView();
-    }
+    /**
+     * Called just after the runnable finalise method
+     */
+    public abstract function onAfter();
 }

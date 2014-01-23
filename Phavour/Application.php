@@ -40,6 +40,7 @@ use Phavour\Config\FromArray;
 use Phavour\Debug\FormattedException;
 use Phavour\Http\Request;
 use Phavour\Http\Response;
+use Phavour\Middleware\MiddlewareProcessor;
 use Phavour\Router\Exception\RouteMissingPackageNameException;
 use Phavour\Router\Exception\RouteNotFoundException;
 use Phavour\Runnable;
@@ -199,12 +200,22 @@ class Application
         $runnable = $route['runnable'];
         $runnables = explode('::', $runnable);
         $classString = $package['namespace'] . '\\src\\' . $runnables[0];
+        $middleware = false;
+        if ($this->hasMiddleware()) {
+            $middleware = new MiddlewareProcessor($this->config['Middleware']);
+        }
         if (class_exists($classString)) {
             try {
+                if ($middleware) {
+                    $middleware->runBefore($this->request, $this->response);
+                }
                 $instance = $this->getRunnable($package['package_name'], $runnables[0], $runnables[1], $classString);
                 if (is_callable(array($instance, $runnables[1]))) {
                     call_user_func_array(array($instance, $runnables[1]), $route['params']);
                     $instance->finalise();
+                    if ($middleware) {
+                        $middleware->runAfter();
+                    }
                     return;
                 }
             // @codeCoverageIgnoreStart
@@ -351,6 +362,15 @@ class Application
 
         $this->routes = $routes;
         $this->cache->set($cacheName, $this->routes, 86400);
+    }
+
+    /**
+     * Check if the applation config file contains Middleware to be run
+     * @return boolean
+     */
+    public function hasMiddleware()
+    {
+        return (array_key_exists('Middleware', $this->config) && is_array($this->config['Middleware']));
     }
 
     /**

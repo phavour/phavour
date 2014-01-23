@@ -97,6 +97,18 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('Welcome to Phavour', $content);
     }
 
+    public function testHasMiddlewareAndMiddlewareIsCalled()
+    {
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $_SERVER['REQUEST_URI'] = '/middleware';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        @ob_start();
+        $result = $this->app->run();
+        $content = @ob_get_clean();
+        $this->assertTrue($this->app->hasMiddleware());
+        $this->assertEquals('foobar', $content);
+    }
+
     public function testInvalidPackage()
     {
         try {
