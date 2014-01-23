@@ -30,30 +30,26 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\PhavourTests\DefaultPackage\src;
+namespace Phavour\PhavourTests\DefaultPackage\lib;
 
-use Phavour\Runnable;
-use Phavour\DebuggableException;
+use Phavour\Middleware\MiddlewareAbstract;
 
-class Index extends Runnable
+class TestCaseMiddleware extends MiddlewareAbstract
 {
-    public function init()
+    public function onBefore()
     {
-        if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-            $e = new DebuggableException('You can only access this method from 127.0.0.1');
-            $e->setAdditionalData('Reason', 'Coded check of IP at: ' . __METHOD__);
-            throw $e;
+        if ($this->request->getRequestUri() == '/middleware') {
+            $this->response->setBody('foo');
         }
     }
 
-    public function index()
+    public function onAfter()
     {
-        $this->view->data = 'I\'m from the runnable!';
-        $this->view->setLayout('default.phtml');
-    }
-
-    public function middleware()
-    {
-        $this->view->disableView();
+        if ($this->request->getRequestUri() == '/middleware') {
+            $this->response->setBody(
+                $this->response->getBody() . 'bar'
+            );
+            $this->response->sendResponse();
+        }
     }
 }
