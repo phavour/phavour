@@ -86,6 +86,18 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $this->assertContains('404: Page Not Found', $content);
     }
 
+    public function testDirectRenderRoute()
+    {
+        $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
+        $_SERVER['REQUEST_URI'] = '/view-only';
+        $_SERVER['REQUEST_METHOD'] = 'GET';
+        @ob_start();
+        $result = $this->app->run();
+        $content = @ob_get_clean();
+        $this->assertContains('Test view file, for using view.directRender', $content);
+        $this->assertContains('Test view file, declared view.layout', $content);
+    }
+
     public function testValidRoute()
     {
         $_SERVER['REQUEST_URI'] = '/';

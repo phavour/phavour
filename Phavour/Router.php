@@ -332,6 +332,22 @@ class Router
             return false;
         }
 
+        if (!array_key_exists('view.directRender', $route)) {
+            $route['view.directRender'] = false;
+        } else {
+            if (!is_bool($route['view.directRender'])) {
+                return false;
+            }
+        }
+
+        if (!array_key_exists('view.layout', $route)) {
+            $route['view.layout'] = false;
+        } else {
+            if (!is_string($route['view.layout'])) {
+                return false;
+            }
+        }
+
         if (!array_key_exists('method', $route)) {
             $route['method'] = 'GET';
         }

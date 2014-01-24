@@ -84,11 +84,50 @@ class RouterTest extends \PHPUnit_Framework_TestCase
                 'allow' => array(
                     'from' => '127.0.0.1'
                 )
-            )
+            ),
+            'index_view_only_not_valid' => array(
+                'method' => 'GET',
+                'path' => '/view-only/not-valid',
+                'view.directRender' => new \stdClass(),
+            ),
+            'index_layout_not_valid' => array(
+                'method' => 'GET',
+                'path' => '/layout/not-valid',
+                'view.directRender' => true,
+                'view.layout' => new \stdClass(),
+            ),
         );
 
         $this->router = new Router();
         $this->router->setRoutes($this->routes);
+    }
+
+    public function testViewDirectRenderWhenNonBoolThrowsException()
+    {
+        $this->router->setPath('/view-only/not-valid');
+        $this->router->setMethod('GET');
+        try {
+            $this->router->getRoute();
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+            return;
+        }
+
+        $this->fail('Failed asserting Exception for invalid route.');
+    }
+
+    public function testInvalidLayoutWhenDirectRenderIsUsedButNonBoolThrowsException()
+    {
+        $this->router->setPath('/layout/not-valid');
+        $this->router->setMethod('GET');
+        try {
+            $this->router->getRoute();
+        } catch (\Exception $e) {
+            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+            return;
+        }
+
+        $this->fail('Failed asserting Exception for invalid route.');
     }
 
     public function testGettersAndSettersWork()

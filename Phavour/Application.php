@@ -196,14 +196,39 @@ class Application
             return;
         }
 
-        $package = $this->getPackage($route['package']);
-        $runnable = $route['runnable'];
-        $runnables = explode('::', $runnable);
-        $classString = $package['namespace'] . '\\src\\' . $runnables[0];
         $middleware = false;
         if ($this->hasMiddleware()) {
             $middleware = new MiddlewareProcessor($this->config['Middleware']);
         }
+        $package = $this->getPackage($route['package']);
+        $runnable = $route['runnable'];
+        $runnables = explode('::', $runnable);
+
+        // Check if it's a view script only.
+        if ($route['view.directRender'] === true) {
+            try {
+                if ($middleware) {
+                    $middleware->runBefore($this->request, $this->response);
+                }
+                $view = $this->getViewFor($package['package_name'], $runnables[0], $runnables[1]);
+                if ($route['view.layout'] !== false) {
+                    $view->setLayout($route['view.layout']);
+                }
+                $view->setResponse($this->response);
+                $view->render();
+                if ($middleware) {
+                    $middleware->runAfter();
+                }
+                return;
+                // @codeCoverageIgnoreStart
+            } catch (\Exception $e) {
+                $this->error($e);
+                return;
+            }
+        }
+
+        $classString = $package['namespace'] . '\\src\\' . $runnables[0];
+
         if (class_exists($classString)) {
             try {
                 if ($middleware) {
@@ -211,6 +236,9 @@ class Application
                 }
                 $instance = $this->getRunnable($package['package_name'], $runnables[0], $runnables[1], $classString);
                 if (is_callable(array($instance, $runnables[1]))) {
+                    if ($route['view.layout'] !== false) {
+                        $instance->getView()->setLayout($route['view.layout']);
+                    }
                     call_user_func_array(array($instance, $runnables[1]), $route['params']);
                     $instance->finalise();
                     if ($middleware) {
