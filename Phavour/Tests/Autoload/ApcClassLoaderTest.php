@@ -36,6 +36,13 @@ use \Phavour\Autoload\ApcClassLoader;
 
 class ApcClassLoaderTest extends \PHPUnit_Framework_TestCase
 {
+    public function setUp()
+    {
+        if (!extension_loaded('apc')) {
+            $this->markTestSkipped('apc extension isnt available');
+            return;
+        }
+    }
     public function testUnknownMethodsProxyToTheRealAutoloader()
     {
         $loader = $this->getMock('Composer\\Autoload\\ClassLoader', array('setUseIncludePath'), array(), '', false);

@@ -437,7 +437,7 @@ class View
             $file = substr($file, 0, -6);
         }
 
-        $package = $this->app->getPackage($this->package);
+        $package = $this->app->getPackage($package);
         $pathPieces = array($package['package_path'], 'res', 'layout', $file);
         $path = implode(self::DS, $pathPieces) . '.phtml';
         if (file_exists($path)) {

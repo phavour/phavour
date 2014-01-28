@@ -48,6 +48,10 @@ class AdapterApcTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (!extension_loaded('apc')) {
+            $this->markTestSkipped('apc extension isnt available');
+            return;
+        }
         $this->name = md5(__CLASS__);
         $this->adapter = new AdapterApc();
         $this->adapter->flush();
