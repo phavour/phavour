@@ -48,6 +48,10 @@ class AdapterMemcacheTest extends \PHPUnit_Framework_TestCase
 
     public function setUp()
     {
+        if (!class_exists('\Memcache')) {
+            $this->markTestSkipped('Memcache isnt available');
+            return;
+        }
         $this->name = md5(__CLASS__);
         $cacheConfig = array(
             array(
