@@ -386,7 +386,7 @@ class Request
      */
     public function isXmlHttpRequest()
     {
-        if (@$this->env['X_REQUESTED_WITH'] == 'XMLHttpRequest') {
+        if ($this->getHeader('X_REQUESTED_WITH') === 'XMLHttpRequest') {
             return true;
         }
 
