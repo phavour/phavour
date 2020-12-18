@@ -246,15 +246,16 @@ class View
      * Get a route path by a given name
      * @param string $routeName
      * @param array $params (optional)
+     * @param bool $full (optional) whether to prepend the full host / port etc.
      * @return string
      */
-    public function urlFor($routeName, array $params = array())
+    public function urlFor($routeName, array $params = array(), $full = false)
     {
         if (null === $this->router) {
             return '';
         }
 
-        return $this->router->urlFor($routeName, $params);
+        return $this->router->urlFor($routeName, $params, $full);
     }
 
     /**

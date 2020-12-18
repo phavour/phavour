@@ -187,13 +187,15 @@ class Router
 
     /**
      * Get a URL for a given route name
+     *
      * @param string $routeName
      * @param array $params (optional)
+     * @param bool $full (optional) whether to prepend the full host / port etc.
      * @return string
      */
-    public function urlFor($routeName, array $params = array())
+    public function urlFor($routeName, array $params = array(), $full = false)
     {
-        $storageKey = md5($routeName . serialize($params));
+        $storageKey = md5($routeName . serialize($params) . var_export($full, true));
         if (array_key_exists($storageKey, $this->resolvedUrls)) {
             return $this->resolvedUrls[$storageKey];
         }
@@ -209,7 +211,12 @@ class Router
             return $routeName;
         }
 
+        $prepend = '';
         $path = $route['path'];
+        if ($full === true) {
+            $prepend = $_SERVER['REQUEST_SCHEME'] . '://' . $_SERVER['HTTP_HOST'];
+            $path = $prepend . $path;
+        }
         if (empty($params)) {
             $this->resolvedUrls[$storageKey] = $path;
             return $path;
