@@ -38,11 +38,12 @@ use Phavour\Http\Response;
 use Phavour\Runnable\View;
 use Phavour\Application\Environment;
 use Phavour\Router;
+use PHPUnit\Framework\TestCase;
 
 /**
  * RunnableTest
  */
-class RunnableTest extends \PHPUnit_Framework_TestCase
+class RunnableTest extends TestCase
 {
     /**
      * @var \Phavour\Application|null
@@ -54,7 +55,7 @@ class RunnableTest extends \PHPUnit_Framework_TestCase
      */
     private $runnable = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->app = $this->getMockBuilder('Phavour\\Application')->disableOriginalConstructor()->getMock();
 
@@ -114,6 +115,7 @@ class RunnableTest extends \PHPUnit_Framework_TestCase
     public function testRedirect()
     {
         $this->runnable->redirect('/', 302);
+        $this->assertEquals(302, $this->runnable->getResponse()->getStatus());
     }
 
     public function testGetUrl()

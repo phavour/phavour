@@ -151,6 +151,7 @@ class StorageTest extends SessionTestBase
         $storage->__construct();
         $_SESSION['__Pf_pb']['store'] = array();
         $storage->__construct();
+        $this->assertFalse($storage->isLocked());
     }
 
     public function testRemoveSession()
@@ -161,7 +162,7 @@ class StorageTest extends SessionTestBase
         try {
             $storage->get('abc');
         } catch (\Exception $e) {
-            $this->assertContains('may not be started', $e->getMessage());
+            $this->assertStringContainsString('may not be started', $e->getMessage());
             return;
         }
         $this->fail('exception was expected');

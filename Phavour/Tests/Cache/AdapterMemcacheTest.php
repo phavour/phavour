@@ -33,11 +33,12 @@
 namespace Phavour\Tests\Cache;
 
 use Phavour\Cache\AdapterMemcache;
+use PHPUnit\Framework\TestCase;
 
 /**
  * AdapterMemcache
  */
-class AdapterMemcacheTest extends \PHPUnit_Framework_TestCase
+class AdapterMemcacheTest extends TestCase
 {
     /**
      * @var AdapterMemcache
@@ -46,7 +47,7 @@ class AdapterMemcacheTest extends \PHPUnit_Framework_TestCase
 
     private $name = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!class_exists('\Memcache')) {
             $this->markTestSkipped('Memcache isnt available');

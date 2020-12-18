@@ -34,11 +34,12 @@ namespace Phavour\Tests\Cache;
 
 use Phavour\Cache\AdapterFileSystem;
 use Phavour\Helper\FileSystem\Directory;
+use PHPUnit\Framework\TestCase;
 
 /**
  * AdapterFileSystemTest
  */
-class AdapterFileSystemTest extends \PHPUnit_Framework_TestCase
+class AdapterFileSystemTest extends TestCase
 {
     /**
      * @var AdapterFileSystem
@@ -60,7 +61,7 @@ class AdapterFileSystemTest extends \PHPUnit_Framework_TestCase
      */
     private $name = 'abcd';
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->dir = new Directory();
         $tmpDir = sys_get_temp_dir();
@@ -80,7 +81,7 @@ class AdapterFileSystemTest extends \PHPUnit_Framework_TestCase
         try {
         	$a = new AdapterFileSystem(array());
         } catch (\Exception $e) {
-            $this->assertContains('key must be specified', $e->getMessage());
+            $this->assertStringContainsString('key must be specified', $e->getMessage());
             return;
         }
         $this->fail('expected exception');
@@ -193,6 +194,6 @@ class AdapterFileSystemTest extends \PHPUnit_Framework_TestCase
 
     public function testFlush()
     {
-        $this->adapter->flush();
+        $this->assertTrue($this->adapter->flush());
     }
 }

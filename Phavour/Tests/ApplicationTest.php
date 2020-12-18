@@ -34,11 +34,12 @@ namespace Phavour\Tests;
 
 use Phavour\Application;
 use Phavour\Cache\AdapterNull;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ApplicationTest
  */
-class ApplicationTest extends \PHPUnit_Framework_TestCase
+class ApplicationTest extends TestCase
 {
     /**
      * @var Application
@@ -50,7 +51,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
      */
     private $packages = array();
 
-    public function setUp()
+    public function setUp(): void
     {
         /** @var \Phavour\Package[] $appPackages */
         global $appPackages;
@@ -67,12 +68,13 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         $app->setup();
         $app->setCacheAdapter(new AdapterNull());
         $content = @ob_get_clean();
-        $this->assertContains('500: Unexpected Error', $content);
+        $this->assertStringContainsString('500: Unexpected Error', $content);
     }
 
     public function testSetup()
     {
         $this->app->setup();
+        $this->assertTrue($this->app->isSetup());
     }
 
     public function testInvalidRoute()
@@ -83,7 +85,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         @ob_start();
         $result = $this->app->run();
         $content = @ob_get_clean();
-        $this->assertContains('404: Page Not Found', $content);
+        $this->assertStringContainsString('404: Page Not Found', $content);
     }
 
     public function testDirectRenderRoute()
@@ -94,8 +96,8 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         @ob_start();
         $result = $this->app->run();
         $content = @ob_get_clean();
-        $this->assertContains('Test view file, for using view.directRender', $content);
-        $this->assertContains('Test view file, declared view.layout', $content);
+        $this->assertStringContainsString('Test view file, for using view.directRender', $content);
+        $this->assertStringContainsString('Test view file, declared view.layout', $content);
     }
 
     public function testValidRoute()
@@ -106,7 +108,7 @@ class ApplicationTest extends \PHPUnit_Framework_TestCase
         @ob_start();
         $result = $this->app->run();
         $content = @ob_get_clean();
-        $this->assertContains('Welcome to Phavour', $content);
+        $this->assertStringContainsString('Welcome to Phavour', $content);
     }
 
     public function testHasMiddlewareAndMiddlewareIsCalled()

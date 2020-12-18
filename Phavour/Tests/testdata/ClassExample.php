@@ -41,7 +41,6 @@ class ClassExample extends Runnable
 {
     public function init()
     {
-        $init = parent::init();
-        return $init;
+        return parent::init();
     }
 }

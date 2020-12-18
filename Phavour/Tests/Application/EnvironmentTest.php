@@ -33,11 +33,12 @@
 namespace Phavour\Tests\Application;
 
 use Phavour\Application\Environment;
+use PHPUnit\Framework\TestCase;
 
 /**
  * EnvironmentTest
  */
-class EnvironmentTest extends \PHPUnit_Framework_TestCase
+class EnvironmentTest extends TestCase
 {
     public function testInstance()
     {

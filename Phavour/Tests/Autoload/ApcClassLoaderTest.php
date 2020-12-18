@@ -33,10 +33,11 @@
 namespace Phavour\Tests\Autoload;
 
 use \Phavour\Autoload\ApcClassLoader;
+use PHPUnit\Framework\TestCase;
 
-class ApcClassLoaderTest extends \PHPUnit_Framework_TestCase
+class ApcClassLoaderTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         if (!extension_loaded('apc')) {
             $this->markTestSkipped('apc extension isnt available');

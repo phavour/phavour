@@ -33,11 +33,12 @@
 namespace Phavour\Tests\Config;
 
 use Phavour\Config\FromArray;
+use PHPUnit\Framework\TestCase;
 
 /**
  * FromArrayTest
  */
-class FromArrayTest extends \PHPUnit_Framework_TestCase
+class FromArrayTest extends TestCase
 {
     /**
      * @var string
@@ -49,7 +50,7 @@ class FromArrayTest extends \PHPUnit_Framework_TestCase
      */
     private $invalidConfigPath = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->filepath = realpath(dirname(__FILE__) . '/../testdata/array.php');
         $this->invalidConfigPath = realpath(dirname(__FILE__) . '/../testdata/emptyfile.php');
@@ -82,7 +83,7 @@ class FromArrayTest extends \PHPUnit_Framework_TestCase
                 count($config->getArrayWhereKeysBeginWith('person.'))
             );
         } catch (\Exception $e) {
-            $this->assertContains('Config not found', $e->getMessage());
+            $this->assertStringContainsString('Config not found', $e->getMessage());
             return;
         }
 

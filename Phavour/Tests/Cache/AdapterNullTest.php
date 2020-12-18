@@ -33,18 +33,19 @@
 namespace Phavour\Tests\Cache;
 
 use Phavour\Cache\AdapterNull;
+use PHPUnit\Framework\TestCase;
 
 /**
  * AdapterNullTest
  */
-class AdapterNullTest extends \PHPUnit_Framework_TestCase
+class AdapterNullTest extends TestCase
 {
     /**
      * @var AdapterNull
      */
     private $adapter = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->adapter = new AdapterNull();
     }

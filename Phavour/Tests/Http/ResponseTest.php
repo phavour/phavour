@@ -33,18 +33,19 @@
 namespace Phavour\Tests\Http;
 
 use Phavour\Http\Response;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ResponseTest
  */
-class ResponseTest extends \PHPUnit_Framework_TestCase
+class ResponseTest extends TestCase
 {
     /**
      * @var Response
      */
     private $response = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->response = new Response();
     }
@@ -79,7 +80,7 @@ class ResponseTest extends \PHPUnit_Framework_TestCase
         try {
             $this->response->sendHeaders();
         } catch (\Exception $e) {
-            $this->assertContains('cannot send a redirect using a regular response', $e->getMessage());
+            $this->assertStringContainsString('cannot send a redirect using a regular response', $e->getMessage());
             return;
         }
         $this->fail('expected exception');

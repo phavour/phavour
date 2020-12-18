@@ -33,11 +33,12 @@
 namespace Phavour\Tests;
 
 use Phavour\Router;
+use PHPUnit\Framework\TestCase;
 
 /**
  * RouterTest
  */
-class RouterTest extends \PHPUnit_Framework_TestCase
+class RouterTest extends TestCase
 {
     /**
      * @var array
@@ -49,7 +50,7 @@ class RouterTest extends \PHPUnit_Framework_TestCase
      */
     private $router = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->routes = array(
             'index' => array(

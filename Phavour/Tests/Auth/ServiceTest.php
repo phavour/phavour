@@ -52,7 +52,14 @@ class ServiceTest extends SessionTestBase
         $roles = $auth->getRoles();
         $this->assertCount(2, $identity);
         $this->assertCount(2, $roles);
-        $this->assertContains('admin', $roles);
+        $found = false;
+        foreach ($roles as $role) {
+            if ($role === 'admin') {
+                $found = true;
+                break;
+            }
+        }
+        $this->assertTrue($found);
     }
 
     public function testServiceInvalidCredentials()

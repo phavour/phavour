@@ -33,11 +33,12 @@
 namespace Phavour\Tests\Helper\FileSystem;
 
 use Phavour\Helper\FileSystem\Directory;
+use PHPUnit\Framework\TestCase;
 
 /**
  * DirectoryTest
  */
-class DirectoryTest extends \PHPUnit_Framework_TestCase
+class DirectoryTest extends TestCase
 {
     public function testMakeInvalids()
     {

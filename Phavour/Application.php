@@ -126,6 +126,14 @@ class Application
     }
 
     /**
+     * @return bool
+     */
+    public function isSetup()
+    {
+        return $this->isSetup;
+    }
+
+    /**
      * Set an application level cache adapter.
      * This adapter will be made available to all runnables
      *

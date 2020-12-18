@@ -44,9 +44,8 @@ class Error extends Runnable
     /**
      * Called upon a 404
      */
-    public function notFound()
+    public function notFound($package = 'DefaultPackage', $class = 'Error', $method = 'notFound')
     {
-
     }
 
     /**

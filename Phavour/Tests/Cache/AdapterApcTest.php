@@ -33,11 +33,12 @@
 namespace Phavour\Tests\Cache;
 
 use Phavour\Cache\AdapterApc;
+use PHPUnit\Framework\TestCase;
 
 /**
  * AdapterApcTest
  */
-class AdapterApcTest extends \PHPUnit_Framework_TestCase
+class AdapterApcTest extends TestCase
 {
     /**
      * @var AdapterApc
@@ -46,7 +47,7 @@ class AdapterApcTest extends \PHPUnit_Framework_TestCase
 
     private $name = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         if (!extension_loaded('apc')) {
             $this->markTestSkipped('apc extension isnt available');

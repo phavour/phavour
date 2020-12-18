@@ -32,10 +32,12 @@
  */
 namespace Phavour\Tests;
 
+use PHPUnit\Framework\TestCase;
+
 /**
  * SessionTestBase
  */
-class SessionTestBase extends \PHPUnit_Framework_TestCase
+class SessionTestBase extends TestCase
 {
     protected function initServerVariables()
     {

@@ -35,11 +35,12 @@ namespace Phavour\Tests\Runnable;
 use Phavour\Runnable\View;
 use Phavour\Http\Response;
 use Phavour\Router;
+use PHPUnit\Framework\TestCase;
 
 /**
  * ViewTest
  */
-class ViewTest extends \PHPUnit_Framework_TestCase
+class ViewTest extends TestCase
 {
     /**
      * @var \Phavour\Application|null
@@ -51,7 +52,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
      */
     private $view = null;
 
-    public function setUp()
+    public function setUp(): void
     {
         global $appPackages;
 
@@ -139,7 +140,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         @ob_start();
         $this->view->render('index', 'Index', 'DefaultPackage');
         $result = @ob_get_clean();
-        $this->assertContains('joe', $result);
+        $this->assertStringContainsString('joe', $result);
     }
 
     public function testLayoutContains()
@@ -150,7 +151,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $this->view->setLayout('DefaultPackage::default');
         $this->view->render('index', 'Index', 'DefaultPackage');
         $result = @ob_get_clean();
-        $this->assertContains('123', $result);
+        $this->assertStringContainsString('123', $result);
     }
 
     public function testLayoutNoPackage()
@@ -161,7 +162,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
         $this->view->setLayout('default');
         $this->view->render('index', 'Index', 'DefaultPackage');
         $result = @ob_get_clean();
-        $this->assertContains('abc', $result);
+        $this->assertStringContainsString('abc', $result);
     }
 
     public function testRenderInvalid()
@@ -172,7 +173,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
             $this->view->render('namae', 'UserTest', 'DefaultPackage');
         } catch (\Exception $e) {
             $this->assertInstanceOf('\Phavour\Runnable\View\Exception\ViewFileNotFoundException', $e);
-            $this->assertContains('Invalid view file', $e->getMessage());
+            $this->assertStringContainsString('Invalid view file', $e->getMessage());
             return;
         }
         $this->fail('expected exception');
@@ -187,7 +188,7 @@ class ViewTest extends \PHPUnit_Framework_TestCase
             $this->view->render('namae', 'UserTest', 'TestPackage');
         } catch (\Exception $e) {
             $this->assertInstanceOf('\Phavour\Runnable\View\Exception\LayoutFileNotFoundException', $e);
-            $this->assertContains('Invalid layout file path', $e->getMessage());
+            $this->assertStringContainsString('Invalid layout file path', $e->getMessage());
             return;
         }
         $this->fail('expected exception');
