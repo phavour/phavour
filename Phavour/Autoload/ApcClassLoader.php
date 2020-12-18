@@ -32,7 +32,8 @@
  */
 namespace Phavour\Autoload;
 
-use \Composer\Autoload\ClassLoader;
+use Composer\Autoload\ClassLoader;
+use RuntimeException;
 
 /**
  * Caches the autoloader using APC
@@ -57,13 +58,13 @@ class ApcClassLoader
      * @param string $key
      * @param ClassLoader $loader
      *
-     * @throws \RuntimeException
+     * @throws RuntimeException
      */
     public function __construct($key, ClassLoader $loader)
     {
         if (!extension_loaded('apc')) {
             // @codeCoverageIgnoreStart
-            throw new \RuntimeException('APC is not enabled.');
+            throw new RuntimeException('APC is not enabled.');
             // @codeCoverageIgnoreEnd
         }
 
@@ -98,6 +99,7 @@ class ApcClassLoader
         $file = $this->findFile($class);
 
         if ($file) {
+            /** @noinspection PhpIncludeInspection */
             require $file;
 
             return true;

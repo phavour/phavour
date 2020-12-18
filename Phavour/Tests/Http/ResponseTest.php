@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,6 +32,7 @@
  */
 namespace Phavour\Tests\Http;
 
+use Exception;
 use Phavour\Http\Response;
 use PHPUnit\Framework\TestCase;
 
@@ -66,6 +67,9 @@ class ResponseTest extends TestCase
         $this->assertCount(2, $this->response->getHeaders());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSendHeaders()
     {
         $array = array('X-Name' => 'Joe', 'X-Age' => '30');
@@ -79,13 +83,16 @@ class ResponseTest extends TestCase
         $this->response->setStatus(301);
         try {
             $this->response->sendHeaders();
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertStringContainsString('cannot send a redirect using a regular response', $e->getMessage());
             return;
         }
         $this->fail('expected exception');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testResponseRedirect()
     {
         $this->response->cleanHeaders();
@@ -94,6 +101,9 @@ class ResponseTest extends TestCase
         $this->response->cleanHeaders();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSendInvalidStatus()
     {
         $this->response->setStatus(999);
@@ -105,7 +115,7 @@ class ResponseTest extends TestCase
     {
         try {
             $this->response->redirect('/', 999);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertEquals('Invalid redirect status specified', $e->getMessage());
             return;
         }

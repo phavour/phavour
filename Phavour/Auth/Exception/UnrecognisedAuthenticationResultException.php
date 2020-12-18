@@ -32,9 +32,12 @@
  */
 namespace Phavour\Auth\Exception;
 
+use Exception;
+
 /**
  * \Phavour\Auth\Exception\UnrecognisedAuthenticationResultException
  * @see https://github.com/rogerthomas84/skinny
  */
-class UnrecognisedAuthenticationResultException extends \Exception
-{}
+class UnrecognisedAuthenticationResultException extends Exception
+{
+}

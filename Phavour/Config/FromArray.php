@@ -32,6 +32,8 @@
  */
 namespace Phavour\Config;
 
+use Exception;
+
 /**
  * FromArray
  */
@@ -57,14 +59,15 @@ class FromArray
 
     /**
      * Get the array from the given location in construct
-     * @throws \Exception
+     * @throws Exception
      * @return array
      */
     public function getArray()
     {
+        /** @noinspection PhpIncludeInspection */
         $config = @include $this->location;
         if (!is_array($config)) {
-            throw new \Exception('Config not found');
+            throw new Exception('Config not found');
         }
 
         $this->config = $config;
@@ -76,6 +79,7 @@ class FromArray
      * Return the config, only where the top level keys begin with $string
      * @param string $string
      * @return array
+     * @throws Exception
      */
     public function getArrayWhereKeysBeginWith($string)
     {

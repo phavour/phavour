@@ -32,6 +32,8 @@
  */
 namespace Phavour\Session;
 
+use Exception;
+
 /**
  * Storage
  *
@@ -70,21 +72,21 @@ class Storage {
      * Initiate a new or existing namespace
      *
      * @param string $name defaults to 'Default'
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct($name = 'Default')
     {
-        if (headers_sent($filename, $linenum)) {
+        if (headers_sent($filename, $lineNum)) {
             // @codeCoverageIgnoreStart
-            throw new \Exception('Headers already sent in ' . $filename . '::' . $linenum);
+            throw new Exception('Headers already sent in ' . $filename . '::' . $lineNum);
             // @codeCoverageIgnoreEnd
         } else {
             if ($name === '') {
-                throw new \Exception('Namespace name cannot be empty');
+                throw new Exception('Namespace name cannot be empty');
             } else if ($name[0] == "_" && substr($name, 0, 5) != "__Pf_") {
-                throw new \Exception('Namespace name cannot start with an underscore.');
+                throw new Exception('Namespace name cannot start with an underscore.');
             } else if (preg_match('#(^[0-9])#i', $name[0])) {
-                throw new \Exception('Namespace name cannot start with a number');
+                throw new Exception('Namespace name cannot start with a number');
             } else {
                 $this->_namespaceName = $name;
                 @session_start();
@@ -97,7 +99,7 @@ class Storage {
      * Lock the namespace, this will prevent removal of keys
      *
      * @return boolean
-     * @throws \Exception
+     * @throws Exception
      */
     public function lock()
     {
@@ -110,7 +112,7 @@ class Storage {
      * Unlock the namespace, this will allow removal of keys
      *
      * @return boolean
-     * @throws \Exception
+     * @throws Exception
      */
     public function unlock()
     {
@@ -123,7 +125,7 @@ class Storage {
      * Check if a namespace is currently locked.
      *
      * @return boolean
-     * @throws \Exception
+     * @throws Exception
      */
     public function isLocked()
     {
@@ -140,7 +142,7 @@ class Storage {
      * @param string $name
      * @param mixed $value
      * @return boolean result of save
-     * @throws \Exception
+     * @throws Exception
      */
     public function set($name, $value)
     {
@@ -156,7 +158,7 @@ class Storage {
      *
      * @param string $name
      * @return mixed
-     * @throws \Exception
+     * @throws Exception
      */
     public function get($name)
     {
@@ -170,8 +172,8 @@ class Storage {
     /**
      * Retrieve the entire namespace
      *
-     * @return array success | boolean false failure
-     * @throws \Exception
+     * @return array|false on failure
+     * @throws Exception
      */
     public function getAll()
     {
@@ -187,7 +189,7 @@ class Storage {
      *
      * @param string $name
      * @return boolean result of removal
-     * @throws \Exception
+     * @throws Exception
      */
     public function remove($name)
     {
@@ -206,7 +208,7 @@ class Storage {
      * Clear all values currently held in this namespace
      *
      * @return boolean status of removal
-     * @throws \Exception
+     * @throws Exception
      */
     public function removeAll()
     {
@@ -223,7 +225,7 @@ class Storage {
      * the namespace will no longer be held in session
      *
      * @return boolean
-     * @throws \Exception
+     * @throws Exception
      */
     public function destroy()
     {
@@ -276,12 +278,12 @@ class Storage {
     /**
      * Validate if a session exists.
      *
-     * @throws \Exception
+     * @throws Exception
      */
     protected function _validate()
     {
         if (!isset($_SESSION)) {
-            throw new \Exception('Session may not be started.');
+            throw new Exception('Session may not be started.');
         }
         return;
     }

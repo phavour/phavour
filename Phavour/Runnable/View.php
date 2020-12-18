@@ -32,11 +32,13 @@
  */
 namespace Phavour\Runnable;
 
-use Phavour\Http\Response;
-use Phavour\Runnable\View\Exception\ViewFileNotFoundException;
-use Phavour\Runnable\View\Exception\LayoutFileNotFoundException;
-use Phavour\Router;
+use Exception;
 use Phavour\Application;
+use Phavour\Application\Exception\PackageNotFoundException;
+use Phavour\Http\Response;
+use Phavour\Router;
+use Phavour\Runnable\View\Exception\LayoutFileNotFoundException;
+use Phavour\Runnable\View\Exception\ViewFileNotFoundException;
 
 /**
  * View
@@ -69,7 +71,7 @@ class View
      * The package name
      * @var string|null
      */
-    private $package = null;
+    private $package;
 
     /**
      * The view body
@@ -87,7 +89,7 @@ class View
      * The class name
      * @var string|null
      */
-    private $class = null;
+    private $class;
 
     /**
      * Instance of Router
@@ -105,7 +107,7 @@ class View
      * The method name
      * @var string|null
      */
-    private $method = null;
+    private $method;
 
     /**
      * Whether a view is enabled
@@ -215,7 +217,7 @@ class View
 
     /**
      * Set the script name (usually the method name)
-     * @param string $method
+     * @param string $name
      */
     public function setScriptName($name)
     {
@@ -256,7 +258,7 @@ class View
     }
 
     /**
-     * Magic method to call $view->myvar = 'x';
+     * Magic method to call $view->myVar = 'x';
      * @param string|integer $name
      * @param mixed $value
      */
@@ -266,7 +268,7 @@ class View
     }
 
     /**
-     * Magic method to call $x = $view->myvar (returns null if not set)
+     * Magic method to call $x = $view->myVar (returns null if not set)
      * @param string $name
      * @return string|null
      */
@@ -361,6 +363,8 @@ class View
     /**
      * Set the layout location
      * @param string $file
+     * @throws LayoutFileNotFoundException
+     * @throws PackageNotFoundException
      */
     public function setLayout($file)
     {
@@ -380,7 +384,10 @@ class View
      * @param string $methodName
      * @param string $class
      * @param string $package
-     * @return boolean if no view, otherwise sends the response
+     * @return bool|void if no view, otherwise sends the response
+     * @throws PackageNotFoundException
+     * @throws ViewFileNotFoundException
+     * @throws Exception
      */
     public function render($methodName = null, $class = null, $package = null)
     {
@@ -402,10 +409,12 @@ class View
 
         $this->currentView = $this->getPathForView();
         @ob_start();
+        /** @noinspection PhpIncludeInspection */
         @include $this->currentView;
         $this->viewBody = @ob_get_clean();
         if (!empty($this->layoutLocation)) {
             @ob_start();
+            /** @noinspection PhpIncludeInspection */
             @include $this->layoutLocation;
             $this->viewBody = @ob_get_clean();
         }
@@ -416,6 +425,7 @@ class View
     /**
      * Retrieve the view content
      * @return string
+     * @noinspection PhpUnusedPrivateMethodInspection
      */
     private function content()
     {
@@ -427,7 +437,7 @@ class View
      * @param string $package
      * @param string $file
      * @throws LayoutFileNotFoundException
-     * @throws \Phavour\Application\Exception\PackageNotFoundException
+     * @throws PackageNotFoundException
      * @return boolean
      */
     private function assignDeclaredLayout($package, $file)
@@ -451,7 +461,7 @@ class View
 
     /**
      * Get the path for a view file.
-     * @throws \Phavour\Application\Exception\PackageNotFoundException
+     * @throws PackageNotFoundException
      * @throws ViewFileNotFoundException
      * @return string
      */
@@ -474,7 +484,8 @@ class View
     /**
      * Inflate a given
      * @param string $filePath
-     * @throws \Phavour\Runnable\View\Exception\ViewFileNotFoundException
+     * @throws ViewFileNotFoundException
+     * @noinspection PhpUnusedPrivateMethodInspection
      */
     private function inflate($filePath)
     {
@@ -486,6 +497,7 @@ class View
 
         $searchPath = realpath($currentDirectory . $filePath);
         if ($searchPath != false && file_exists($searchPath)) {
+            /** @noinspection PhpIncludeInspection */
             $content = @include $searchPath;
             if (!$content) {
                 // @codeCoverageIgnoreStart

@@ -32,7 +32,8 @@
  */
 namespace Phavour\Cache;
 
-use Phavour\Cache\AdapterAbstract;
+use Exception;
+use Memcache;
 
 /**
  * AdapterMemcache
@@ -45,7 +46,7 @@ class AdapterMemcache extends AdapterAbstract
     const DEFAULT_TTL = 86400;
 
     /**
-     * @var \Memcache
+     * @var Memcache
      */
     private $memcache = null;
 
@@ -71,7 +72,7 @@ class AdapterMemcache extends AdapterAbstract
     public function __construct(array $servers)
     {
         try {
-            $this->memcache = new \Memcache();
+            $this->memcache = new Memcache();
             foreach ($servers as $server) {
                 $this->memcache->addserver(
                     $server['host'],
@@ -81,7 +82,7 @@ class AdapterMemcache extends AdapterAbstract
                     $server['timeout']
                 );
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // @codeCoverageIgnoreStart
             $this->memcache = null;
             // @codeCoverageIgnoreEnd
@@ -104,7 +105,7 @@ class AdapterMemcache extends AdapterAbstract
         try {
             return $this->memcache->get($key);
         // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return false;
@@ -135,7 +136,7 @@ class AdapterMemcache extends AdapterAbstract
         try {
             return $this->memcache->set($key, $value, $flag, $ttl);
         // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return false;
@@ -179,7 +180,7 @@ class AdapterMemcache extends AdapterAbstract
             try {
                 return $this->memcache->replace($key, $value, $flag, $ttl);
             // @codeCoverageIgnoreStart
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
             }
         }
         // @codeCoverageIgnoreEnd
@@ -203,7 +204,7 @@ class AdapterMemcache extends AdapterAbstract
         try {
             return $this->memcache->delete($key);
         // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return false;
@@ -225,7 +226,7 @@ class AdapterMemcache extends AdapterAbstract
         try {
             return $this->memcache->flush();
             // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return false;
@@ -238,6 +239,6 @@ class AdapterMemcache extends AdapterAbstract
      */
     private function hasConnection()
     {
-        return ($this->memcache instanceof \Memcache);
+        return ($this->memcache instanceof Memcache);
     }
 }

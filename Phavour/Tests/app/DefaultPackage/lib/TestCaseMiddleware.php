@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Phavour PHP Framework Library
  *
@@ -32,6 +33,7 @@
  */
 namespace Phavour\PhavourTests\DefaultPackage\lib;
 
+use Exception;
 use Phavour\Middleware\MiddlewareAbstract;
 
 class TestCaseMiddleware extends MiddlewareAbstract
@@ -43,6 +45,9 @@ class TestCaseMiddleware extends MiddlewareAbstract
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function onAfter()
     {
         if ($this->request->getRequestUri() == '/middleware') {

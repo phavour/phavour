@@ -32,8 +32,6 @@
  */
 namespace Phavour\Cache;
 
-use Phavour\Cache\AdapterAbstract;
-
 /**
  * AdapterNull
  */
@@ -49,6 +47,7 @@ class AdapterNull extends AdapterAbstract
 
     /**
      * Dummy method
+     * @param string $key
      * @return boolean false
      */
     public function get($key)

@@ -32,7 +32,7 @@
  */
 namespace Phavour\Cache;
 
-use Phavour\Cache\AdapterAbstract;
+use Exception;
 use Phavour\Helper\FileSystem\Directory;
 
 /**
@@ -69,12 +69,12 @@ class AdapterFileSystem extends AdapterAbstract
      * Construct requires an array with the key of path, which should point
      * to a writable folder.
      * @param array $config
-     * @throws \Exception
+     * @throws Exception
      */
     public function __construct(array $config)
     {
         if (!array_key_exists('path', $config) || !is_dir($config['path']) || !is_writable($config['path'])) {
-            throw new \Exception('"path" key must be specified and be a valid location');
+            throw new Exception('"path" key must be specified and be a valid location');
         }
         $this->path = rtrim($config['path'], '/\\');
         $this->helper = new Directory();
@@ -82,29 +82,12 @@ class AdapterFileSystem extends AdapterAbstract
 
     /**
      * Get a value from cache
+     * @param string $key
      * @return mixed|boolean false
      */
     public function get($key)
     {
-        $md5 = md5($key);
-        $folderPath = $this->getFolderPathFromMd5($md5);
-        $path = $this->path . self::DS . $folderPath . self::DS . $this->prefix . $md5;
-        if (!file_exists($path) || !is_readable($path)) {
-            return false;
-        }
-
-        $content = file_get_contents($path);
-        if (!$content) {
-            return false;
-        }
-
-        $pieces = explode(PHP_EOL, $content);
-        if (!is_array($pieces) || !is_numeric($pieces[0])) {
-            unlink($path);
-            return false;
-        }
-
-        $val = @unserialize($pieces[1]);
+        $val = $this->getVal($key);
         if ($val === false) {
             $this->remove($key);
             return false;
@@ -164,6 +147,21 @@ class AdapterFileSystem extends AdapterAbstract
      */
     public function renew($key, $ttl = self::DEFAULT_TTL)
     {
+        $val = $this->getVal($key);
+        if (!$val) {
+            $this->remove($key);
+            return false;
+        }
+
+        return $this->set($key, $val, $ttl);
+    }
+
+    /**
+     * @param string $key
+     * @return bool|mixed
+     */
+    protected function getVal($key)
+    {
         $md5 = md5($key);
         $folderPath = $this->getFolderPathFromMd5($md5);
         $path = $this->path . self::DS . $folderPath . self::DS . $this->prefix . $md5;
@@ -173,9 +171,7 @@ class AdapterFileSystem extends AdapterAbstract
 
         $content = file_get_contents($path);
         if (!$content) {
-            // @codeCoverageIgnoreStart
             return false;
-            // @codeCoverageIgnoreEnd
         }
 
         $pieces = explode(PHP_EOL, $content);
@@ -184,13 +180,7 @@ class AdapterFileSystem extends AdapterAbstract
             return false;
         }
 
-        $val = @unserialize($pieces[1]);
-        if (!$val) {
-            $this->remove($key);
-            return false;
-        }
-
-        return $this->set($key, $val, $ttl);
+        return @unserialize($pieces[1]);
     }
 
     /**
@@ -221,7 +211,7 @@ class AdapterFileSystem extends AdapterAbstract
         	return true;
 
         // @codeCoverageIgnoreStart
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
         }
 
         return false;

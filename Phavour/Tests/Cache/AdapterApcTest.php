@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Phavour PHP Framework Library
  *
@@ -50,7 +51,7 @@ class AdapterApcTest extends TestCase
     public function setUp(): void
     {
         if (!extension_loaded('apc')) {
-            $this->markTestSkipped('apc extension isnt available');
+            $this->markTestSkipped('apc extension is not available');
             return;
         }
         $this->name = md5(__CLASS__);

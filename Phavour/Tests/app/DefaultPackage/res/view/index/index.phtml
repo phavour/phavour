@@ -1,17 +1,18 @@
-<?php
+<?php /** @noinspection PhpFullyQualifiedNameUsageInspection */
 /* @var $this \Phavour\Runnable\View */
 ?>
 <h1>Welcome to Phavour!</h1>
 <p>
     Phavour is a new PHP Framework with a focus on speed and ease of development.
 </p>
+
+<pre>
+    <?php
+    /** @noinspection PhpUnhandledExceptionInspection */
+    $this->inflate('demo/included');
+    ?>
+</pre>
 <p>
-    <pre>
-        <?php
-        $this->inflate('demo/included');
-        ?>
-    </pre>
-</p>
-<p>
+    <!--suppress HtmlUnknownTarget -->
     <a href="/docs">Read the docs</a>
 </p>

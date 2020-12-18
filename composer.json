@@ -12,10 +12,15 @@
     ],
     "require": {
         "php": ">=7.2.0",
-        "ext-mbstring": "*"
+        "ext-mbstring": "*",
+        "ext-json": "*",
     },
     "require-dev": {
         "phpunit/phpunit": "^8"
+    },
+    "suggest": {
+        "ext-apcu": "For using apc cache",
+        "ext-memcache": "For using memcache cache"
     },
     "autoload": {
         "psr-0": { "Phavour": "" }

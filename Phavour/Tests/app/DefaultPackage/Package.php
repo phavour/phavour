@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Phavour PHP Framework Library
  *
@@ -32,10 +33,12 @@
  */
 namespace Phavour\PhavourTests\DefaultPackage;
 
+use Phavour\Package as PhavourPackage;
+
 /**
  * Package
  */
-class Package extends \Phavour\Package
+class Package extends PhavourPackage
 {
     public function __construct()
     {

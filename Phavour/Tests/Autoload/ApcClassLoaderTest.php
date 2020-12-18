@@ -1,4 +1,6 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+/** @noinspection PhpUndefinedMethodInspection */
+
 /**
  * Phavour PHP Framework Library
  *
@@ -32,7 +34,7 @@
  */
 namespace Phavour\Tests\Autoload;
 
-use \Phavour\Autoload\ApcClassLoader;
+use Phavour\Autoload\ApcClassLoader;
 use PHPUnit\Framework\TestCase;
 
 class ApcClassLoaderTest extends TestCase
@@ -40,7 +42,7 @@ class ApcClassLoaderTest extends TestCase
     public function setUp(): void
     {
         if (!extension_loaded('apc')) {
-            $this->markTestSkipped('apc extension isnt available');
+            $this->markTestSkipped('apc extension is not available');
             return;
         }
     }
@@ -80,7 +82,7 @@ class ApcClassLoaderTest extends TestCase
         $apcLoader = new ApcClassLoader('phavour_phpunit', $loader);
 
         $return = $apcLoader->loadClass('\\Phavour\\Tests\\testdata\\ApcClassLoaderClassExample');
-        $this->assertEquals($return, true);
+        $this->assertEquals(true, $return);
     }
 
     public function testLoadUnknownClassReturnsNull()
@@ -91,7 +93,7 @@ class ApcClassLoaderTest extends TestCase
         $apcLoader = new ApcClassLoader('phavour_phpunit', $loader);
 
         $return = $apcLoader->loadClass('\\Unknown\\Class\\Name');
-        $this->assertEquals($return, null);
+        $this->assertEquals(null, $return);
     }
 
     public function testSecondCallHitsCache()

@@ -32,6 +32,7 @@
  */
 namespace Phavour;
 
+use Exception;
 use Phavour\Session\Storage;
 
 /**
@@ -51,25 +52,25 @@ class Session
     /**
      * Instance of this class
      *
-     * @var \Phavour\Session
+     * @var Session
      */
     protected static $_instance = null;
 
     /**
-     * @var \Phavour\Session\Storage
+     * @var Storage
      */
     private $instance = false;
 
     /**
      * Protected __construct()
      *
-     * @throws \Exception
+     * @throws Exception
      */
     final protected function __construct()
     {
-        if (headers_sent($filename, $linenum)) {
+        if (headers_sent($filename, $lineNum)) {
             // @codeCoverageIgnoreStart
-            throw new \Exception('Headers already sent in ' . $filename . '::' . $linenum);
+            throw new Exception('Headers already sent in ' . $filename . '::' . $lineNum);
             // @codeCoverageIgnoreEnd
         } else {
             $this->setup();
@@ -79,7 +80,7 @@ class Session
     /**
      * Retrieve an instance of \Phavour\Storage\Session
      *
-     * @return \Phavour\Storage\Session
+     * @return Session
      */
     public static function getInstance()
     {
@@ -94,7 +95,7 @@ class Session
      *
      * @param string $name
      * @param mixed $value
-     * @throws \Exception
+     * @throws Exception
      * @return boolean result of set
      */
     public function set($name, $value)
@@ -110,7 +111,7 @@ class Session
      * Remove a single value from the session
      *
      * @param string $name
-     * @throws \Exception
+     * @throws Exception
      * @return boolean
      */
     public function remove($name)
@@ -124,7 +125,7 @@ class Session
     /**
      * Clear all session values outside of the namespace.
      *
-     * @throws \Exception
+     * @throws Exception
      * @return boolean
      */
     public function removeAll()
@@ -140,7 +141,7 @@ class Session
      * to regenerate a new session id.
      *
      * @param boolean $regenerate
-     * @throws \Exception
+     * @throws Exception
      * @return boolean
      */
     public function destroy($regenerate = false)
@@ -157,8 +158,8 @@ class Session
      * Retrieve a value from the session
      *
      * @param string $name
-     * @throws \Exception
-     * @return value|boolean false for failure
+     * @throws Exception
+     * @return mixed|false for failure
      */
     public function get($name)
     {

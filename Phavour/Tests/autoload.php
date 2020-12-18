@@ -1,8 +1,9 @@
 <?php
-
 require __DIR__ . '/../../vendor/autoload.php';
 
-$loader = new \Composer\Autoload\ClassLoader();
+use Composer\Autoload\ClassLoader;
+
+$loader = new ClassLoader();
 
 $map = array(
     'Phavour\\PhavourTests\\' => __DIR__ . '/app'

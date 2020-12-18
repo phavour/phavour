@@ -32,12 +32,13 @@
  */
 namespace Phavour;
 
-use Phavour\Http\Request;
-use Phavour\Http\Response;
-use Phavour\Runnable\View;
+use Exception;
 use Phavour\Application\Environment;
 use Phavour\Cache\AdapterAbstract;
 use Phavour\Cache\AdapterNull;
+use Phavour\Http\Request;
+use Phavour\Http\Response;
+use Phavour\Runnable\View;
 
 /**
  * Runnable
@@ -83,6 +84,7 @@ abstract class Runnable
      * Redirect the request.
      * @param string $url
      * @param integer $status
+     * @throws Exception
      */
     final public function redirect($url, $status = 302)
     {
@@ -116,13 +118,12 @@ abstract class Runnable
      */
     final public function isConstructed()
     {
-        $a = ($this->request instanceof Request);
-        return $a;
+        return ($this->request instanceof Request);
     }
 
     /**
      * Get the request object
-     * @return \Phavour\Http\Request
+     * @return Request
      */
     final public function getRequest()
     {
@@ -140,7 +141,7 @@ abstract class Runnable
 
     /**
      * Get the response object
-     * @return \Phavour\Http\Response
+     * @return Response
      */
     final public function getResponse()
     {
@@ -185,7 +186,7 @@ abstract class Runnable
 
     /**
      * Stub for users to extend. Called directly after __construct
-     * @return void
+     * @return bool
      */
     public function init()
     {
@@ -195,6 +196,8 @@ abstract class Runnable
     /**
      * Called at the end of the process.
      * @return boolean
+     * @throws Application\Exception\PackageNotFoundException
+     * @throws View\Exception\ViewFileNotFoundException
      */
     final public function finalise()
     {
@@ -225,9 +228,9 @@ abstract class Runnable
      * can call this directly.
      * Optionally, you can specify the package name, class name,
      * and method name to render accordingly.
-     * @param sring $package (optional) default 'DefaultPackage'
-     * @param sring $class (optional) default 'Error'
-     * @param sring $method (optional) default 'notFound'
+     * @param string $package (optional) default 'DefaultPackage'
+     * @param string $class (optional) default 'Error'
+     * @param string $method (optional) default 'notFound'
      * @return void
      */
     public function notFound($package = 'DefaultPackage', $class = 'Error', $method = 'notFound')

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,7 +32,7 @@
  */
 namespace Phavour\Tests;
 
-use Phavour\Tests\SessionTestBase;
+use Exception;
 use Phavour\Auth;
 
 /**
@@ -40,54 +40,81 @@ use Phavour\Auth;
  */
 class AuthTest extends SessionTestBase
 {
+    /**
+     * @throws Exception
+     */
     public function testIsLoggedOut()
     {
         $this->initLoggedOutSession();
         $this->assertFalse(Auth::getInstance()->isLoggedIn());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDoesNotHaveRole()
     {
         $this->initLoggedOutSession();
         $this->assertFalse(Auth::getInstance()->hasRole('admin'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testZeroRoles()
     {
         $this->initLoggedOutSession();
         $this->assertFalse(Auth::getInstance()->getRoles());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testNoIdentity()
     {
         $this->initLoggedOutSession();
         $this->assertFalse(Auth::getInstance()->getIdentity());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testIsLoggedInRole()
     {
         $this->initLoggedInSession();
         $this->assertTrue(Auth::getInstance()->isLoggedIn());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDoesHaveRole()
     {
         $this->initLoggedInSession();
         $this->assertTrue(Auth::getInstance()->hasRole('admin'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testTwoRoles()
     {
         $this->initLoggedInSession();
         $this->assertCount(2, Auth::getInstance()->getRoles());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testTwoIdentityKeys()
     {
         $this->initLoggedInSession();
         $this->assertCount(2, Auth::getInstance()->getIdentity());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRemoveRole()
     {
         $this->initLoggedInSession();
@@ -103,6 +130,9 @@ class AuthTest extends SessionTestBase
         $auth->removeRole('admin');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAddRole()
     {
         $this->initLoggedInSession();
@@ -120,6 +150,9 @@ class AuthTest extends SessionTestBase
         $auth->setup();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetRoles()
     {
         $this->initLoggedInSession();
@@ -130,6 +163,9 @@ class AuthTest extends SessionTestBase
         $this->assertCount(4, Auth::getInstance()->getRoles());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetExistingRole()
     {
         $this->initLoggedInSession();
@@ -141,6 +177,9 @@ class AuthTest extends SessionTestBase
         $this->assertCount(1, Auth::getInstance()->getRoles());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAddToIdentity()
     {
         $this->initLoggedInSession();
@@ -156,6 +195,9 @@ class AuthTest extends SessionTestBase
         $this->assertCount(1, Auth::getInstance()->getIdentity());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetIdentityEmpty()
     {
         $this->initLoggedInSession();
@@ -163,6 +205,9 @@ class AuthTest extends SessionTestBase
         $this->assertFalse(Auth::getInstance()->getIdentity());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testLoginAndOut()
     {
         $this->initLoggedInSession();
@@ -174,6 +219,9 @@ class AuthTest extends SessionTestBase
         $this->assertFalse(Auth::getInstance()->isLoggedIn());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testLoginNoInstance()
     {
         $this->initLoggedInSession();
@@ -182,6 +230,9 @@ class AuthTest extends SessionTestBase
         $this->assertFalse($auth->login(array('123' => 'abc')));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testAddToNoIdentity()
     {
         $this->initLoggedInSession();
@@ -190,6 +241,9 @@ class AuthTest extends SessionTestBase
         $this->assertFalse($auth->addToIdentity(array('123' => 'abc')));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetStorage()
     {
         $this->initLoggedInSession();
@@ -198,6 +252,9 @@ class AuthTest extends SessionTestBase
         $this->assertInstanceOf('\Phavour\Session\Storage', $auth->getStorage());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetRolesNoStorage()
     {
         $this->initLoggedInSession();
@@ -207,6 +264,9 @@ class AuthTest extends SessionTestBase
         $this->assertFalse($auth->setRoles(array('1', '2', '3')));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRawLockedUnlocked()
     {
         $this->initLoggedInSession();
@@ -217,6 +277,9 @@ class AuthTest extends SessionTestBase
         $this->assertFalse($auth->getStorage()->isLocked());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetNoStorage()
     {
         $this->initLoggedInSession();

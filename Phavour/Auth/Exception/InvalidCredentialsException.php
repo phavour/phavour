@@ -32,9 +32,11 @@
  */
 namespace Phavour\Auth\Exception;
 
+use Exception;
+
 /**
  * \Phavour\Auth\Exception\InvalidCredentialsException
  * @see https://github.com/rogerthomas84/skinny
  */
-class InvalidCredentialsException extends \Exception
+class InvalidCredentialsException extends Exception
 {}

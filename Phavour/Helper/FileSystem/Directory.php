@@ -32,6 +32,9 @@
  */
 namespace Phavour\Helper\FileSystem;
 
+use RecursiveDirectoryIterator;
+use RecursiveIteratorIterator;
+
 /**
  * Directory
  */
@@ -93,15 +96,15 @@ class Directory
             return;
         }
 
-        $iterator = new \RecursiveDirectoryIterator($baseDirectory);
-        $files = new \RecursiveIteratorIterator(
+        $iterator = new RecursiveDirectoryIterator($baseDirectory);
+        $files = new RecursiveIteratorIterator(
             $iterator,
-            \RecursiveIteratorIterator::CHILD_FIRST
+            RecursiveIteratorIterator::CHILD_FIRST
         );
 
         foreach ($files as $file) {
-            $fname = $file->getFilename();
-            if ($fname == '.' || $fname == '..') {
+            $fileName = $file->getFilename();
+            if ($fileName == '.' || $fileName == '..') {
                 continue;
             }
 

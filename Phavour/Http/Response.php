@@ -32,6 +32,8 @@
  */
 namespace Phavour\Http;
 
+use Exception;
+
 /**
  * Response
  */
@@ -76,7 +78,7 @@ class Response
 
     /**
      * Get the response status code
-     * @return the $status
+     * @return int
      */
     public function getStatus()
     {
@@ -105,7 +107,7 @@ class Response
      * @param string $name
      * @param string $value
      * @param boolean $override (optional) default true
-     * @return \Phavour\Http\Response
+     * @return Response
      */
     public function setHeader($name, $value, $override = true)
     {
@@ -116,6 +118,8 @@ class Response
         }
 
         $this->headers[$name] = $value;
+
+        return $this;
     }
 
     /**
@@ -142,6 +146,9 @@ class Response
         return $this;
     }
 
+    /**
+     * @throws Exception
+     */
     public function sendResponse()
     {
         @ob_clean();
@@ -159,11 +166,16 @@ class Response
         /* @codeCoverageIgnoreEnd */
     }
 
+    /**
+     * @param string $url
+     * @param int $status
+     * @throws Exception
+     */
     public function redirect($url, $status = 302)
     {
         $this->status = $status;
         if (!$this->isValidRedirectStatus()) {
-            throw new \Exception('Invalid redirect status specified');
+            throw new Exception('Invalid redirect status specified');
         }
         $codes = $this->getHttpResponseCodes();
         $this->setHeader('Location', $url);
@@ -175,6 +187,7 @@ class Response
 
     /**
      * Send the HTTP Response Headers
+     * @throws Exception
      */
     public function sendHeaders()
     {
@@ -184,7 +197,7 @@ class Response
             $string = 'HTTP/1.0 500 ' . $codes[500];
         } else {
             if ($this->isValidRedirectStatus()) {
-                throw new \Exception(
+                throw new Exception(
                     'You cannot send a redirect using a regular response. Use $this->response->redirect(url, status);'
                 );
             }

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,7 +32,7 @@
  */
 namespace Phavour\Tests;
 
-use Phavour\Tests\SessionTestBase;
+use Exception;
 use Phavour\Session;
 
 /**
@@ -45,6 +45,9 @@ class SessionTest extends SessionTestBase
         return Session::getInstance();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRegenerate()
     {
         $_SESSION = array();
@@ -52,6 +55,9 @@ class SessionTest extends SessionTestBase
         $this->assertTrue($storage->destroy(true));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetAndGet()
     {
         $_SESSION = array();
@@ -60,6 +66,9 @@ class SessionTest extends SessionTestBase
         $this->assertEquals('123', $storage->get('abc'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRemove()
     {
         $_SESSION = array();
@@ -68,6 +77,9 @@ class SessionTest extends SessionTestBase
         $this->assertTrue($storage->remove('abc'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRemoveAll()
     {
         $_SESSION = array();
@@ -76,6 +88,9 @@ class SessionTest extends SessionTestBase
         $this->assertTrue($storage->removeAll());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testHeaders()
     {
         $_SESSION = array();

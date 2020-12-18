@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,6 +32,7 @@
  */
 namespace Phavour\Tests\Cache;
 
+use Exception;
 use Phavour\Cache\AdapterFileSystem;
 use Phavour\Helper\FileSystem\Directory;
 use PHPUnit\Framework\TestCase;
@@ -61,6 +62,9 @@ class AdapterFileSystemTest extends TestCase
      */
     private $name = 'abcd';
 
+    /**
+     * @throws Exception
+     */
     public function setUp(): void
     {
         $this->dir = new Directory();
@@ -79,8 +83,8 @@ class AdapterFileSystemTest extends TestCase
     public function testAssertException()
     {
         try {
-        	$a = new AdapterFileSystem(array());
-        } catch (\Exception $e) {
+        	new AdapterFileSystem(array());
+        } catch (Exception $e) {
             $this->assertStringContainsString('key must be specified', $e->getMessage());
             return;
         }
@@ -151,6 +155,9 @@ class AdapterFileSystemTest extends TestCase
         $this->assertFalse($adapter->get($name));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCannotCreatePath()
     {
         $path = $this->path . Directory::DS . 'nowrite';
@@ -159,7 +166,7 @@ class AdapterFileSystemTest extends TestCase
         $adapter = new AdapterFileSystem(array('path' => $path));
         $this->assertFalse($adapter->set('abc', 'def', 100));
         rmdir($path);
-        $adapter->renew('abc', 'def', 100);
+        $adapter->renew('abc', 100);
     }
 
     public function testSetRenew()

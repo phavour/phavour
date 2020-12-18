@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,8 +32,9 @@
  */
 namespace Phavour\Tests\Session;
 
-use Phavour\Tests\SessionTestBase;
+use Exception;
 use Phavour\Session\Storage;
+use Phavour\Tests\SessionTestBase;
 
 /**
  * StorageTest
@@ -45,6 +46,9 @@ class StorageTest extends SessionTestBase
         return new Storage();
     }
 
+    /**
+     * @throws Exception
+     */
     public function testLocks()
     {
         $_SESSION = array();
@@ -54,6 +58,9 @@ class StorageTest extends SessionTestBase
         $this->assertTrue($storage->isLocked());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testSetWithLocks()
     {
         $_SESSION = array();
@@ -64,6 +71,9 @@ class StorageTest extends SessionTestBase
         $this->assertTrue($storage->set('abc', '123'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGet()
     {
         $_SESSION = array();
@@ -74,6 +84,9 @@ class StorageTest extends SessionTestBase
         $this->assertEquals('123', $storage->get('abc'));
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetAll()
     {
         $_SESSION = array();
@@ -89,6 +102,9 @@ class StorageTest extends SessionTestBase
         $this->assertEmpty($storage->getAll());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testGetAllNotStarted()
     {
         $_SESSION = array();
@@ -97,6 +113,9 @@ class StorageTest extends SessionTestBase
         $this->assertFalse($storage->getAll());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRemoveExists()
     {
         $_SESSION = array();
@@ -109,6 +128,9 @@ class StorageTest extends SessionTestBase
         $this->assertFalse($storage->remove('abc')); // false as locked.
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRemoveAll()
     {
         $_SESSION = array();
@@ -122,6 +144,9 @@ class StorageTest extends SessionTestBase
         $this->assertFalse($storage->removeAll());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDestroyAll()
     {
         $_SESSION = array();
@@ -135,6 +160,9 @@ class StorageTest extends SessionTestBase
         $this->assertFalse($storage->destroy());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testReConstruct()
     {
         $_SESSION = array();
@@ -161,7 +189,7 @@ class StorageTest extends SessionTestBase
         unset($_SESSION);
         try {
             $storage->get('abc');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertStringContainsString('may not be started', $e->getMessage());
             return;
         }
@@ -172,8 +200,8 @@ class StorageTest extends SessionTestBase
     {
         $_SESSION = array();
         try {
-            $storage = new Storage('');
-        } catch (\Exception $e) {
+            new Storage('');
+        } catch (Exception $e) {
             $this->assertEquals('Namespace name cannot be empty', $e->getMessage());
             return;
         }
@@ -185,8 +213,8 @@ class StorageTest extends SessionTestBase
     {
         $_SESSION = array();
         try {
-            $storage = new Storage('_MySession');
-        } catch (\Exception $e) {
+            new Storage('_MySession');
+        } catch (Exception $e) {
             $this->assertEquals('Namespace name cannot start with an underscore.', $e->getMessage());
             return;
         }
@@ -198,8 +226,8 @@ class StorageTest extends SessionTestBase
     {
         $_SESSION = array();
         try {
-            $storage = new Storage('1Session');
-        } catch (\Exception $e) {
+            new Storage('1Session');
+        } catch (Exception $e) {
             $this->assertEquals('Namespace name cannot start with a number', $e->getMessage());
             return;
         }

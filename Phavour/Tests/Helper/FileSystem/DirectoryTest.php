@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -56,7 +56,7 @@ class DirectoryTest extends TestCase
         $helper->recursivelyDeleteFromDirectory($fullPath);
     }
 
-    public function testRecusiveDelete()
+    public function testRecursiveDelete()
     {
         $fullPath = sys_get_temp_dir() . Directory::DS . 'PhavourTests';
         mkdir($fullPath);

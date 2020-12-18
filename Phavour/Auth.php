@@ -32,6 +32,9 @@
  */
 namespace Phavour;
 
+use Exception;
+use Phavour\Session\Storage;
+
 /**
  * Auth
  *
@@ -48,19 +51,19 @@ class Auth
     /**
      * Instance of this class
      *
-     * @var \Phavour\Auth
+     * @var Auth
      */
     protected static $_instance = null;
 
     /**
-     * @var \Phavour\Session\Storage
+     * @var Storage
      */
     private $instance = false;
 
     /**
      * Protected __construct()
      *
-     * @throws \Exception
+     * @throws Exception
      */
     final protected function __construct()
     {
@@ -70,7 +73,7 @@ class Auth
     /**
      * Retrieve an instance of \Phavour\Auth
      *
-     * @return \Phavour\Auth
+     * @return Auth
      */
     public static function getInstance()
     {
@@ -85,10 +88,11 @@ class Auth
      *
      * @param array $roles (optional) - the users roles
      * @return boolean
+     * @throws Exception
      */
     public function setRoles(array $roles = array())
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if ($this->instance->isLocked()) {
                 $this->instance->unlock();
             }
@@ -102,14 +106,15 @@ class Auth
 
     /**
      * Add to the identity. This performs an array merge on the current
-     * identity, so you can override anyting you need to
+     * identity, so you can override anything you need to
      *
      * @param array $array
      * @return boolean
+     * @throws Exception
      */
     public function addToIdentity($array)
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if ($this->instance->isLocked()) {
                 $this->instance->unlock();
             }
@@ -131,10 +136,11 @@ class Auth
      *
      * @param string $role - a role identifier
      * @return boolean
+     * @throws Exception
      */
     public function addRole($role)
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if ($this->hasRole($role)) {
                 return true;
             }
@@ -160,10 +166,11 @@ class Auth
      *
      * @param string $role - a role identifier
      * @return boolean
+     * @throws Exception
      */
     public function removeRole($role)
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if (!$this->hasRole($role)) {
                 return false;
             }
@@ -193,10 +200,11 @@ class Auth
      *
      * @param string $role
      * @return boolean
+     * @throws Exception
      */
     public function hasRole($role)
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             $roles = $this->instance->get('roles');
             if (is_array($roles) && in_array($role, $roles)) {
                 return true;
@@ -211,10 +219,11 @@ class Auth
      *
      * @param array $identity (optional) - the users account details.
      * @return boolean
+     * @throws Exception
      */
     public function login(array $identity = array())
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if ($this->instance->isLocked()) {
                 $this->instance->unlock();
             }
@@ -230,8 +239,9 @@ class Auth
     /**
      * Retrieve the users identity as set by login
      *
-     * @see \Phavour\Auth::login
      * @return array|boolean false for no identity
+     * @throws Exception
+     * @see \Phavour\Auth::login
      */
     public function getIdentity()
     {
@@ -246,6 +256,7 @@ class Auth
      * Retrieve the users roles as set by setRoles()
      *
      * @return array|boolean false for failure
+     * @throws Exception
      */
     public function getRoles()
     {
@@ -260,10 +271,11 @@ class Auth
      * Check if a user is logged in or not.
      *
      * @return boolean
+     * @throws Exception
      */
     public function isLoggedIn()
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if ($this->instance->get('identity') != false) {
                 return true;
             }
@@ -276,10 +288,11 @@ class Auth
      * Destroy an authentication session.
      *
      * @return boolean
+     * @throws Exception
      */
     public function logout()
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             if ($this->instance->isLocked()) {
                 $this->instance->unlock();
             }
@@ -291,11 +304,11 @@ class Auth
 
     /**
      * Get the storage object
-     * @return \Phavour\Session\Storage|boolean false
+     * @return Storage|boolean false
      */
     public function getStorage()
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             return $this->instance;
         }
 
@@ -304,10 +317,11 @@ class Auth
 
     /**
      * Destroy the instance of Storage
+     * @throws Exception
      */
     public function destroy()
     {
-        if ($this->instance instanceof \Phavour\Session\Storage) {
+        if ($this->instance instanceof Storage) {
             $this->instance->destroy();
         }
         $this->instance = null;
@@ -315,10 +329,11 @@ class Auth
 
     /**
      * Setup the namespace object
+     * @throws Exception
      */
     public function setup()
     {
-        $this->instance = new \Phavour\Session\Storage('__Pf_Auth');
+        $this->instance = new Storage('__Pf_Auth');
         $this->instance->lock();
     }
 }

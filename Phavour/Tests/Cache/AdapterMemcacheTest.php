@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -50,7 +50,7 @@ class AdapterMemcacheTest extends TestCase
     public function setUp(): void
     {
         if (!class_exists('\Memcache')) {
-            $this->markTestSkipped('Memcache isnt available');
+            $this->markTestSkipped('Memcache is not available');
             return;
         }
         $this->name = md5(__CLASS__);

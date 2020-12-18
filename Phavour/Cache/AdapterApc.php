@@ -32,8 +32,6 @@
  */
 namespace Phavour\Cache;
 
-use Phavour\Cache\AdapterAbstract;
-
 /**
  * AdapterApc
  */
@@ -52,6 +50,7 @@ class AdapterApc extends AdapterAbstract
     /**
      * Construct the adapter. The parameter is not required.
      * @param array $config (not needed) required by Abstract
+     * @noinspection PhpUnusedParameterInspection
      */
     public function __construct(array $config = array())
     {
@@ -60,6 +59,7 @@ class AdapterApc extends AdapterAbstract
 
     /**
      * Get a value from cache
+     * @param string $key
      * @return mixed|boolean false
      */
     public function get($key)

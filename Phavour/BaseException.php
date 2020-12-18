@@ -32,10 +32,12 @@
  */
 namespace Phavour;
 
+use Exception;
+
 /**
  * BaseException
  */
-abstract class BaseException extends \Exception
+abstract class BaseException extends Exception
 {
     /**
      * @var array

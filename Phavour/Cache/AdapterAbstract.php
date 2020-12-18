@@ -34,12 +34,14 @@ namespace Phavour\Cache;
 
 /**
  * AdapterAbstract
+ * @noinspection PhpUnused
  */
 abstract class AdapterAbstract
 {
     /**
      * Construct, giving the configuration
      * @param array $config
+     * @noinspection PhpUnused
      */
     abstract function __construct(array $config);
 
@@ -47,6 +49,7 @@ abstract class AdapterAbstract
      * Get a cached value by key
      * @param mixed $key
      * @return mixed|boolean false
+     * @noinspection PhpUnused
      */
     abstract function get($key);
 
@@ -56,6 +59,7 @@ abstract class AdapterAbstract
      * @param mixed $value
      * @param integer $ttl
      * @return boolean
+     * @noinspection PhpUnused
      */
     abstract function set($key, $value, $ttl);
 
@@ -64,6 +68,7 @@ abstract class AdapterAbstract
      * If you require a returned value, call get($key) instead.
      * @param string $key
      * @return boolean
+     * @noinspection PhpUnused
      */
     abstract function has($key);
 
@@ -72,6 +77,7 @@ abstract class AdapterAbstract
      * @param string $key
      * @param integer $ttl
      * @return boolean
+     * @noinspection PhpUnused
      */
     abstract function renew($key, $ttl);
 
@@ -79,12 +85,14 @@ abstract class AdapterAbstract
      * Remove a cached value by key.
      * @param string $key
      * @return boolean
+     * @noinspection PhpUnused
      */
     abstract function remove($key);
 
     /**
      * Flush all existing Cache
      * @return boolean
+     * @noinspection PhpUnused
      */
     abstract function flush();
 }

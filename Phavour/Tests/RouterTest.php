@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,8 +32,10 @@
  */
 namespace Phavour\Tests;
 
+use Exception;
 use Phavour\Router;
 use PHPUnit\Framework\TestCase;
+use stdClass;
 
 /**
  * RouterTest
@@ -58,7 +60,7 @@ class RouterTest extends TestCase
                 'path' => '/',
             ),
             'missing_path' => array(
-                'method' => 'WONTWORK' // Coverage for return false on missing 'path' key check
+                'method' => 'WONT_WORK' // Coverage for return false on missing 'path' key check
             ),
             'missing_method' => array(
                 'path' => '/' // Coverage for return false on missing 'method' key check
@@ -89,13 +91,13 @@ class RouterTest extends TestCase
             'index_view_only_not_valid' => array(
                 'method' => 'GET',
                 'path' => '/view-only/not-valid',
-                'view.directRender' => new \stdClass(),
+                'view.directRender' => new stdClass(),
             ),
             'index_layout_not_valid' => array(
                 'method' => 'GET',
                 'path' => '/layout/not-valid',
                 'view.directRender' => true,
-                'view.layout' => new \stdClass(),
+                'view.layout' => new stdClass(),
             ),
         );
 
@@ -109,8 +111,8 @@ class RouterTest extends TestCase
         $this->router->setMethod('GET');
         try {
             $this->router->getRoute();
-        } catch (\Exception $e) {
-            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+        } catch (Exception $e) {
+            $this->assertEquals('Route for path not found.', $e->getMessage());
             return;
         }
 
@@ -123,8 +125,8 @@ class RouterTest extends TestCase
         $this->router->setMethod('GET');
         try {
             $this->router->getRoute();
-        } catch (\Exception $e) {
-            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+        } catch (Exception $e) {
+            $this->assertEquals('Route for path not found.', $e->getMessage());
             return;
         }
 
@@ -143,6 +145,9 @@ class RouterTest extends TestCase
         $this->assertEquals('127.0.0.1', $this->router->getIp());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDirectMatch()
     {
         $this->router->setMethod('GET');
@@ -152,6 +157,9 @@ class RouterTest extends TestCase
         $this->assertEquals($match['method'], $this->routes['index']['method']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testParamsReturn()
     {
         $this->router->setMethod('GET');
@@ -160,6 +168,9 @@ class RouterTest extends TestCase
         $this->assertArrayHasKey('params', $match);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testParameterisedMatch()
     {
         $this->router->setMethod('GET');
@@ -167,21 +178,27 @@ class RouterTest extends TestCase
         $match = $this->router->getRoute();
         $this->assertEquals($match['path'], $this->routes['index_name']['path']);
         $this->assertEquals($match['method'], $this->routes['index_name']['method']);
-        $this->assertEquals($match['params']['name'], 'joe');
+        $this->assertEquals('joe', $match['params']['name']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testParameterisedMatchUrlDecoded()
     {
         $this->router->setMethod('GET');
         $this->router->setPath('/user/joe+bloggs');
         $match = $this->router->getRoute();
-        $this->assertEquals($match['params']['name'], 'joe bloggs');
+        $this->assertEquals('joe bloggs', $match['params']['name']);
 
         $this->router->setPath('/user/joe%20bloggs');
         $match = $this->router->getRoute();
-        $this->assertEquals($match['params']['name'], 'joe bloggs');
+        $this->assertEquals('joe bloggs', $match['params']['name']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testOtherMethodMatch()
     {
         $methods = array('POST', 'PUT', 'DELETE');
@@ -196,20 +213,26 @@ class RouterTest extends TestCase
         }
     }
 
+    /**
+     * @throws Exception
+     */
     public function testExpectedException()
     {
         $this->router->setPath('/this/doesnt/exist');
         $this->router->setMethod('GET');
         try {
             $this->router->getRoute();
-        } catch (\Exception $e) {
-            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+        } catch (Exception $e) {
+            $this->assertEquals('Route for path not found.', $e->getMessage());
             return;
         }
 
         $this->fail('Failed asserting Exception for invalid route.');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRouteAllowedByIp()
     {
         $this->router->setPath('/auth/ip/allow');
@@ -219,6 +242,9 @@ class RouterTest extends TestCase
         $this->assertEquals('127.0.0.1', $route['allow']['from']);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRouteNotAllowedByIp()
     {
         $this->router->setPath('/auth/ip/allow');
@@ -226,8 +252,8 @@ class RouterTest extends TestCase
         $this->router->setIp('111.111.111.111');
         try {
             $this->router->getRoute();
-        } catch (\Exception $e) {
-            $this->assertEquals($e->getMessage(), 'Route for path not found.');
+        } catch (Exception $e) {
+            $this->assertEquals('Route for path not found.', $e->getMessage());
             return;
         }
 

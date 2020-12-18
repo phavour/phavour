@@ -32,10 +32,14 @@
  */
 namespace Phavour;
 
+use Exception;
 use Phavour\Application\Environment;
-use Phavour\Application\Exception\PackagesNotFoundException;
+use Phavour\Application\Exception\ApplicationIsAlreadySetupException;
 use Phavour\Application\Exception\PackageNotFoundException;
+use Phavour\Application\Exception\PackagesNotFoundException;
 use Phavour\Application\Exception\RunnableNotFoundException;
+use Phavour\Cache\AdapterAbstract;
+use Phavour\Cache\AdapterNull;
 use Phavour\Config\FromArray;
 use Phavour\Debug\FormattedException;
 use Phavour\Http\Request;
@@ -43,11 +47,7 @@ use Phavour\Http\Response;
 use Phavour\Middleware\MiddlewareProcessor;
 use Phavour\Router\Exception\RouteMissingPackageNameException;
 use Phavour\Router\Exception\RouteNotFoundException;
-use Phavour\Runnable;
 use Phavour\Runnable\View;
-use Phavour\Cache\AdapterAbstract;
-use Phavour\Cache\AdapterNull;
-use Phavour\Application\Exception\ApplicationIsAlreadySetupException;
 
 /**
  * Application
@@ -138,6 +138,7 @@ class Application
      * This adapter will be made available to all runnables
      *
      * @param AdapterAbstract $adapter
+     * @throws Exception
      */
     public function setCacheAdapter(AdapterAbstract $adapter)
     {
@@ -177,6 +178,7 @@ class Application
 
     /**
      * Run the application.
+     * @throws Exception
      */
     public function run()
     {
@@ -229,7 +231,7 @@ class Application
                 }
                 return;
                 // @codeCoverageIgnoreStart
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error($e);
                 return;
             }
@@ -255,7 +257,7 @@ class Application
                     return;
                 }
             // @codeCoverageIgnoreStart
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->error($e);
                 return;
             }
@@ -289,7 +291,6 @@ class Application
     private function loadPackages()
     {
         foreach ($this->packages as $package) {
-            /** @var $package \Phavour\Package */
             $this->packagesMetadata[$package->getPackageName()] = array(
                 'namespace' => $package->getNamespace(),
                 'route_path' => $package->getRoutePath(),
@@ -323,7 +324,7 @@ class Application
                 if (is_array($proposedConfig)) {
                     $config = array_merge($config, $proposedConfig);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Package doesn't have config
             }
         }
@@ -336,7 +337,7 @@ class Application
             if (is_array($appConfig)) {
                 $config = array_merge($config, $appConfig);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // No config overrides set
         }
 
@@ -372,7 +373,7 @@ class Application
                     }
                     $routes = array_merge($routes, $proposedRoutes);
                 }
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 // Package doesn't have routes
             }
         }
@@ -392,7 +393,7 @@ class Application
                 }
                 $routes = array_merge($routes, $appRoutes);
             }
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             // No route overrides set
         }
 
@@ -401,7 +402,7 @@ class Application
     }
 
     /**
-     * Check if the applation config file contains Middleware to be run
+     * Check if the application config file contains Middleware to be run
      * @return boolean
      */
     public function hasMiddleware()
@@ -414,9 +415,10 @@ class Application
      * by default it'll look for 'DefaultPackage::Error::notFound' before
      * manipulating the response directly and returning to the user.
      * It's environmental sensitive, so will format things accordingly.
-     * @param \Exception $throwable
+     * @param Exception $throwable
+     * @throws Exception
      */
-    private function notFound(\Exception $throwable)
+    private function notFound(Exception $throwable)
     {
         if ($this->env->isProduction()) {
             if (false != ($errorClass = $this->getErrorClass())) {
@@ -436,7 +438,7 @@ class Application
                     $instance->finalise();
                     return;
                 // @codeCoverageIgnoreStart
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     $this->error($e);
                     return;
                     // @codeCoverageIgnoreEnd
@@ -463,10 +465,11 @@ class Application
      * by default it'll look for 'DefaultPackage::Error::uncaughtError' before
      * manipulating the response directly and returning to the user.
      * It's environmental sensitive, so will format things accordingly.
-     * @param \Exception $throwable
+     * @param Exception $throwable
      * @codeCoverageIgnore
+     * @throws Exception
      */
-    private function error(\Exception $throwable)
+    private function error(Exception $throwable)
     {
         if ($this->env->isProduction()) {
             if (false != ($errorClass = $this->getErrorClass())) {
@@ -482,7 +485,7 @@ class Application
                     }
                     $instance->finalise();
                     return;
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     // Ignore, we're already here.
                 }
             }
@@ -529,7 +532,7 @@ class Application
      * @param string $class
      * @param string $method
      * @param string $className
-     * @return \Phavour\Runnable
+     * @return Runnable
      */
     private function getRunnable($package, $class, $method, $className)
     {
@@ -546,7 +549,7 @@ class Application
      * @param string $package
      * @param string $class
      * @param string $method
-     * @return \Phavour\Runnable\View
+     * @return View
      */
     private function getViewFor($package, $class, $method)
     {

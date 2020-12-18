@@ -32,6 +32,7 @@
  */
 namespace Phavour;
 
+use Exception;
 use Phavour\Router\Exception\RouteNotFoundException;
 
 /**
@@ -141,8 +142,8 @@ class Router
 
     /**
      * Retrieve the matching route from the parameters given.
-     * @throws Exception
      * @return array (or throws Exception)
+     * @throws Exception|RouteNotFoundException
      */
     public function getRoute()
     {
@@ -260,6 +261,7 @@ class Router
      * Check if a route is allowed to access based on the ['allow']['roles'] key
      * @param array $route
      * @return array|boolean false
+     * @throws Exception
      */
     private function isAllowedByRole(array $route)
     {
@@ -294,6 +296,7 @@ class Router
     private function isParameterisedMatch(array $route)
     {
         // Find out if the route has parameters
+        /** @noinspection RegExpRedundantEscape */
         if (!preg_match('/\{[a-z]+\}/i', $route['path'])) {
             return false;
         }
@@ -306,6 +309,7 @@ class Router
 
         $params = array();
         foreach ($routePieces as $routeKey => $routeValue) {
+            /** @noinspection RegExpRedundantEscape */
             if (preg_match('/\{[a-z]+\}/i', $routeValue, $matches)) {
                 $paramName = trim($routeValue, '{} ');
                 $params[$paramName] = urldecode($urlPieces[$routeKey]);

@@ -32,6 +32,8 @@
  */
 namespace Phavour\Debug;
 
+use Exception;
+
 /**
  * FormattedException
  */
@@ -39,15 +41,15 @@ class FormattedException
 {
     /**
      * Format an exception, and show it.
-     * @param \Exception $e
+     * @param Exception $e
      * @param string $title (optional) default 'Application Error'
      * @codeCoverageIgnore
      */
-    public static function display(\Exception $e, $title = 'Application Error')
+    public static function display(Exception $e, $title = 'Application Error')
     {
         @ob_get_clean();
         echo '
-            <html>
+            <html lang="en">
                 <head>
                     <title>' . $title . '</title>
                     <style>
@@ -62,6 +64,7 @@ class FormattedException
                         table{min-width:100%;line-height:30px;}
                         td.cell-left{padding-right:10px;text-align:right;border-right:1px solid #CCCCCC;}
                         td.cell-right{padding-left:10px;text-align:left;}
+                        td.cell-top{vertical-align:top;}
                         td.width50{width:50px;}
                         td.width15p{width:15%;}
                         .highlight{background:yellow;}
@@ -103,16 +106,12 @@ class FormattedException
      * @param integer $line
      * @return string
      * @codeCoverageIgnore
+     * @noinspection HtmlDeprecatedAttribute
      */
     protected static function getSnippetFromFile($file, $line)
     {
         $defaultSnippet = '<code><strong>Snippet not available</strong></code>';
         if (file_exists($file)) {
-            $start = $line;
-            if ($start > 21) {
-                $start = $line - 20;
-            }
-            $end = $start + 40;
             $highlight = highlight_file($file, true);
             if (!$highlight) {
                 return $defaultSnippet;
@@ -149,11 +148,12 @@ class FormattedException
 
     /**
      * Get further information from Exception, if it has the property 'additionalData'
-     * @param \Exception $e
+     * @param Exception $e
      * @return string
      * @codeCoverageIgnore
+     * @noinspection PhpPossiblePolymorphicInvocationInspection
      */
-    public static function getMoreInformationFromException(\Exception $e)
+    public static function getMoreInformationFromException(Exception $e)
     {
         $default = 'No further information available.';
         if (!property_exists($e, 'additionalData')) {
@@ -169,14 +169,14 @@ class FormattedException
         foreach ($e->additionalData as $k => $v) {
             if (is_int($k) || is_string($k)) {
                 $data .= '<tr>';
-                $data .= '<td valign="top" class="cell-left width15p"><strong>' . $k . '</strong></td>';
-                $data .= '<td valign="top" class="cell-right">';
+                $data .= '<td class="cell-left cell-top width15p"><strong>' . $k . '</strong></td>';
+                $data .= '<td class="cell-right cell-top">';
                 if (is_object($v)) {
-                    $data .= '<xmp>' . serialize($v) . '</xmp>';
+                    $data .= '<pre>' . htmlentities(serialize($v)) . '</pre>';
                 } elseif (is_array($v)) {
-                    $data .= '<xmp>' . json_encode($v) . '</xmp>';
+                    $data .= '<pre>' . htmlentities(json_encode($v)) . '</pre>';
                 } else {
-                    $data .= '<xmp>' . $v . '</xmp>';
+                    $data .= '<pre>' . htmlentities($v) . '</pre>';
                 }
                 $data .= '</td>';
                 $data .= '</tr>';

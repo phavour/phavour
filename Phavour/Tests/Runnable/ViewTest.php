@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,9 +32,14 @@
  */
 namespace Phavour\Tests\Runnable;
 
-use Phavour\Runnable\View;
+use Exception;
+use Phavour\Application;
+use Phavour\Application\Exception\PackageNotFoundException;
 use Phavour\Http\Response;
 use Phavour\Router;
+use Phavour\Runnable\View;
+use Phavour\Runnable\View\Exception\LayoutFileNotFoundException;
+use Phavour\Runnable\View\Exception\ViewFileNotFoundException;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -43,7 +48,7 @@ use PHPUnit\Framework\TestCase;
 class ViewTest extends TestCase
 {
     /**
-     * @var \Phavour\Application|null
+     * @var Application|null
      */
     private $app = null;
 
@@ -56,7 +61,7 @@ class ViewTest extends TestCase
     {
         global $appPackages;
 
-        $this->app = new \Phavour\Application(APP_BASE, $appPackages);
+        $this->app = new Application(APP_BASE, $appPackages);
         $this->app->setup();
 
         $this->view = new View($this->app, 'DefaultPackage', 'Index', 'index');
@@ -80,7 +85,7 @@ class ViewTest extends TestCase
     {
         $this->assertCount(2, $this->view->getConfig());
         $this->assertEquals('bar', $this->view->config('foo'));
-        $this->assertNull($this->view->config('invlidkey'));
+        $this->assertNull($this->view->config('invalidKey'));
     }
 
     public function testClassName()
@@ -103,8 +108,10 @@ class ViewTest extends TestCase
 
     public function testMagicMethods()
     {
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->abc = '123';
         $this->assertEquals('123', $this->view->abc);
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->assertNull($this->view->noSuchVariable);
         $this->view->set('name', 'joe');
         $this->assertEquals('joe', $this->view->get('name'));
@@ -126,6 +133,10 @@ class ViewTest extends TestCase
         $this->assertFalse($this->view->isEnabled());
     }
 
+    /**
+     * @throws View\Exception\ViewFileNotFoundException
+     * @throws PackageNotFoundException
+     */
     public function testRender()
     {
         $this->view = new View($this->app, 'TestPackage', 'UserTest', 'name');
@@ -133,9 +144,14 @@ class ViewTest extends TestCase
         $this->assertTrue($this->view->render());
     }
 
+    /**
+     * @throws ViewFileNotFoundException
+     * @throws PackageNotFoundException
+     */
     public function testRenderContains()
     {
         $this->view->setResponse(new Response());
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->data = 'joe';
         @ob_start();
         $this->view->render('index', 'Index', 'DefaultPackage');
@@ -143,9 +159,15 @@ class ViewTest extends TestCase
         $this->assertStringContainsString('joe', $result);
     }
 
+    /**
+     * @throws PackageNotFoundException
+     * @throws ViewFileNotFoundException
+     * @throws LayoutFileNotFoundException
+     */
     public function testLayoutContains()
     {
         $this->view->setResponse(new Response());
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->data = '123';
         @ob_start();
         $this->view->setLayout('DefaultPackage::default');
@@ -154,9 +176,15 @@ class ViewTest extends TestCase
         $this->assertStringContainsString('123', $result);
     }
 
+    /**
+     * @throws PackageNotFoundException
+     * @throws ViewFileNotFoundException
+     * @throws LayoutFileNotFoundException
+     */
     public function testLayoutNoPackage()
     {
         $this->view->setResponse(new Response());
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->data = 'abc';
         @ob_start();
         $this->view->setLayout('default');
@@ -168,10 +196,11 @@ class ViewTest extends TestCase
     public function testRenderInvalid()
     {
         $this->view->setResponse(new Response());
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->name = 'abc';
         try {
             $this->view->render('namae', 'UserTest', 'DefaultPackage');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertInstanceOf('\Phavour\Runnable\View\Exception\ViewFileNotFoundException', $e);
             $this->assertStringContainsString('Invalid view file', $e->getMessage());
             return;
@@ -182,11 +211,12 @@ class ViewTest extends TestCase
     public function testRenderInvalidLayout()
     {
         $this->view->setResponse(new Response());
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->name = 'abc';
         try {
             $this->view->setLayout('nosuchlayout');
             $this->view->render('namae', 'UserTest', 'TestPackage');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertInstanceOf('\Phavour\Runnable\View\Exception\LayoutFileNotFoundException', $e);
             $this->assertStringContainsString('Invalid layout file path', $e->getMessage());
             return;

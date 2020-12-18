@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Phavour PHP Framework Library
  *
@@ -34,8 +35,17 @@ namespace Phavour\PhavourTests\DefaultPackage\src;
 
 use Phavour\Runnable;
 
+/**
+ * Class Error
+ * @package Phavour\PhavourTests\DefaultPackage\src
+ * @noinspection PhpUnused
+ */
 class Error extends Runnable
 {
+    /**
+     * @return bool|void
+     * @noinspection PhpUnused
+     */
     public function init()
     {
 
@@ -43,6 +53,10 @@ class Error extends Runnable
 
     /**
      * Called upon a 404
+     * @param string $package
+     * @param string $class
+     * @param string $method
+     * @noinspection PhpUnused
      */
     public function notFound($package = 'DefaultPackage', $class = 'Error', $method = 'notFound')
     {
@@ -50,6 +64,7 @@ class Error extends Runnable
 
     /**
      * Called upon an error during boot, or an uncaught exception in a runnable
+     * @noinspection PhpUnused
      */
     public function uncaughtException()
     {

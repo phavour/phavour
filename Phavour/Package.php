@@ -49,6 +49,7 @@ abstract class Package
 
     /**
      * @return string
+     * @noinspection PhpUnused
      */
     public function getConfigPath()
     {
@@ -57,6 +58,7 @@ abstract class Package
 
     /**
      * @return string
+     * @noinspection PhpUnused
      */
     public function getRoutePath()
     {
@@ -65,6 +67,7 @@ abstract class Package
 
     /**
      * @return string
+     * @noinspection PhpUnused
      */
     public function getPackageName()
     {
@@ -73,6 +76,7 @@ abstract class Package
 
     /**
      * @return string
+     * @noinspection PhpUnused
      */
     public function getNamespace()
     {
@@ -81,6 +85,7 @@ abstract class Package
 
     /**
      * @return string
+     * @noinspection PhpUnused
      */
     public function getPackagePath()
     {

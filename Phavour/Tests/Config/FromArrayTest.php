@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,6 +32,7 @@
  */
 namespace Phavour\Tests\Config;
 
+use Exception;
 use Phavour\Config\FromArray;
 use PHPUnit\Framework\TestCase;
 
@@ -53,24 +54,30 @@ class FromArrayTest extends TestCase
     public function setUp(): void
     {
         $this->filepath = realpath(dirname(__FILE__) . '/../testdata/array.php');
-        $this->invalidConfigPath = realpath(dirname(__FILE__) . '/../testdata/emptyfile.php');
+        $this->invalidConfigPath = realpath(dirname(__FILE__) . '/../testdata/empty-file.php');
     }
 
+    /**
+     * @throws Exception
+     */
     public function testTestAllConfigIsReturned()
     {
         $config = new FromArray($this->filepath);
-        $this->assertEquals(
+        $this->assertCount(
             3,
-            count($config->getArray())
+            $config->getArray()
         );
     }
 
+    /**
+     * @throws Exception
+     */
     public function testTestKeysBeginningWithStringAreReturned()
     {
         $config = new FromArray($this->filepath);
-        $this->assertEquals(
+        $this->assertCount(
             2,
-            count($config->getArrayWhereKeysBeginWith('person.'))
+            $config->getArrayWhereKeysBeginWith('person.')
         );
     }
 
@@ -78,11 +85,11 @@ class FromArrayTest extends TestCase
     {
         try {
             $config = new FromArray($this->invalidConfigPath);
-            $this->assertEquals(
+            $this->assertCount(
                 2,
-                count($config->getArrayWhereKeysBeginWith('person.'))
+                $config->getArrayWhereKeysBeginWith('person.')
             );
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertStringContainsString('Config not found', $e->getMessage());
             return;
         }

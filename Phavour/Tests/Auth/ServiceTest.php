@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,13 +32,17 @@
  */
 namespace Phavour\Tests\Auth;
 
-use Phavour\Tests\Auth\Adapter\TestCaseAdapter;
-use Phavour\Auth\Service;
-use Phavour\Tests\SessionTestBase;
+use Exception;
 use Phavour\Auth;
+use Phavour\Auth\Service;
+use Phavour\Tests\Auth\Adapter\TestCaseAdapter;
+use Phavour\Tests\SessionTestBase;
 
 class ServiceTest extends SessionTestBase
 {
+    /**
+     * @throws Exception
+     */
     public function testServiceValidCredentials()
     {
         $this->initLoggedOutSession();
@@ -66,11 +70,11 @@ class ServiceTest extends SessionTestBase
     {
         $this->initLoggedOutSession();
         $adapter = new TestCaseAdapter();
-        $adapter->setCredentials('joe@example.com', 'notjoespassword');
+        $adapter->setCredentials('joe@example.com', 'not-joe-password');
         $service = new Service($adapter);
         try {
-            $result = $service->login();
-        } catch (\Exception $e) {
+            $service->login();
+        } catch (Exception $e) {
             $this->assertInstanceOf('\Phavour\Auth\Exception\InvalidCredentialsException', $e);
             return;
         }
@@ -81,12 +85,12 @@ class ServiceTest extends SessionTestBase
     {
         $this->initLoggedOutSession();
         $adapter = new TestCaseAdapter();
-        $adapter->setCredentials('jane@example.com', 'notjanespassword');
+        $adapter->setCredentials('jane@example.com', 'not-jane-password');
         $adapter->setReturnFakeCode();
         $service = new Service($adapter);
         try {
-            $result = $service->login();
-        } catch (\Exception $e) {
+            $service->login();
+        } catch (Exception $e) {
             $this->assertInstanceOf('\Phavour\Auth\Exception\UnrecognisedAuthenticationResultException', $e);
             return;
         }

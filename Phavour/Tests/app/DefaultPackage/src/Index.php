@@ -1,4 +1,5 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
+
 /**
  * Phavour PHP Framework Library
  *
@@ -32,11 +33,23 @@
  */
 namespace Phavour\PhavourTests\DefaultPackage\src;
 
-use Phavour\Runnable;
+use Phavour\Application\Exception\PackageNotFoundException;
 use Phavour\DebuggableException;
+use Phavour\Runnable;
+use Phavour\Runnable\View\Exception\LayoutFileNotFoundException;
 
+/**
+ * Class Index
+ * @package Phavour\PhavourTests\DefaultPackage\src
+ * @noinspection PhpUnused
+ */
 class Index extends Runnable
 {
+    /**
+     * @return bool|void
+     * @throws DebuggableException
+     * @noinspection PhpUnused
+     */
     public function init()
     {
         if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
@@ -46,12 +59,21 @@ class Index extends Runnable
         }
     }
 
+    /**
+     * @throws LayoutFileNotFoundException
+     * @throws PackageNotFoundException
+     * @noinspection PhpUnused
+     */
     public function index()
     {
+        /** @noinspection PhpUndefinedFieldInspection */
         $this->view->data = 'I\'m from the runnable!';
         $this->view->setLayout('default.phtml');
     }
 
+    /**
+     * @noinspection PhpUnused
+     */
     public function middleware()
     {
         $this->view->disableView();

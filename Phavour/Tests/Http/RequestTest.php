@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -128,7 +128,7 @@ class RequestTest extends TestCase
         $this->assertCount(2, $this->request->getParams());
         $this->assertEquals('b', $this->request->getParam('a'));
         $this->assertEquals('d', $this->request->getParam('c'));
-        $this->assertEquals(null, $this->request->getParam('noparam', null));
+        $this->assertEquals(null, $this->request->getParam('no-param', null));
         $this->request->setParam('foo', 'bar');
         $this->assertEquals('bar', $this->request->getParam('foo'));
     }

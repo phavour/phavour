@@ -40,7 +40,7 @@ class Request
     /**
      * @var array
      */
-    private $env = array();
+    private $env;
 
     /**
      * Raw array of all params, including $_GET, $_POST, and user params
@@ -143,7 +143,7 @@ class Request
      * found.
      *
      * @param string $name
-     * @param mixed:multitype $default
+     * @param mixed $default
      * @return string
      */
     public function getHeader($name, $default = null)
@@ -164,7 +164,7 @@ class Request
             if (isset($headers[$name])) {
                 return $headers[$name];
             }
-            $header = strtolower($name);
+            $name = strtolower($name);
             foreach ($headers as $key => $value) {
                 if (strtolower($key) == $name) {
                     return $value;
@@ -205,7 +205,7 @@ class Request
     }
 
     /**
-     * Retrieve all request params (GET / POST and Manuall Set Params) as a
+     * Retrieve all request params (GET / POST and Manually Set Params) as a
      * single array
      *
      * @return array
@@ -238,6 +238,8 @@ class Request
     /**
      * Retrieve all request params (GET and POST) as a single array
      *
+     * @param string $name
+     * @param mixed|null $default
      * @return array
      */
     public function getParam($name, $default = null)
@@ -312,7 +314,7 @@ class Request
         }
 
         // @codeCoverageIgnoreStart
-        return $body;
+        return $this->body;
         // @codeCoverageIgnoreEnd
     }
 

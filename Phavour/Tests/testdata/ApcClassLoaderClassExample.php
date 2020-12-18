@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -33,7 +33,7 @@
 namespace Phavour\Tests\testdata;
 
 /**
- * ApcClassLoaderClassExmple
+ * ApcClassLoaderClassExample
  */
 class ApcClassLoaderClassExample
 {

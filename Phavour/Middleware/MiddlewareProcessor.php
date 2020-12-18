@@ -48,7 +48,7 @@ class MiddlewareProcessor
     /**
      * @var array
      */
-    private $middlewares = array();
+    private $middlewares;
 
     /**
      * Construct, passing the array of MiddlewareAbstracts
@@ -62,6 +62,8 @@ class MiddlewareProcessor
     /**
      * Called by \Phavour\Application, this method runs all
      * Middleware onBefore methods
+     * @param Request $request
+     * @param Response $response
      * @return void
      */
     public function runBefore(Request $request, Response $response)

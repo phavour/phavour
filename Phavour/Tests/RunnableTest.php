@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,12 +32,14 @@
  */
 namespace Phavour\Tests;
 
-use Phavour\Tests\testdata\ClassExample;
+use Exception;
+use Phavour\Application;
+use Phavour\Application\Environment;
 use Phavour\Http\Request;
 use Phavour\Http\Response;
-use Phavour\Runnable\View;
-use Phavour\Application\Environment;
 use Phavour\Router;
+use Phavour\Runnable\View;
+use Phavour\Tests\testdata\ClassExample;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -46,7 +48,7 @@ use PHPUnit\Framework\TestCase;
 class RunnableTest extends TestCase
 {
     /**
-     * @var \Phavour\Application|null
+     * @var Application|null
      */
     private $app = null;
 
@@ -112,6 +114,9 @@ class RunnableTest extends TestCase
         $this->assertInstanceOf('\Phavour\Runnable\View', $this->runnable->getView());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testRedirect()
     {
         $this->runnable->redirect('/', 302);

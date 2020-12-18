@@ -32,10 +32,11 @@
  */
 namespace Phavour\Auth;
 
-use Phavour\Auth\AdapterAbstract;
+use Exception;
+use Phavour\Auth;
 use Phavour\Auth\Exception\InvalidCredentialsException;
 use Phavour\Auth\Exception\UnrecognisedAuthenticationResultException;
-use Phavour\Auth;
+
 /**
  * \Phavour\Auth\Service
  *
@@ -57,7 +58,7 @@ class Service
     /**
      * @var AdapterAbstract|null
      */
-    private $adapter = null;
+    private $adapter;
 
     /**
      * Set the adapter to authenticate with
@@ -70,9 +71,10 @@ class Service
 
     /**
      * Log a user in using the given adapter from the construct
-     * @throws InvalidCredentialsException
+     * @return bool
      * @throws UnrecognisedAuthenticationResultException
-     * @return boolean|throws
+     * @throws InvalidCredentialsException
+     * @throws Exception
      */
     public function login()
     {

@@ -32,8 +32,8 @@
  */
 namespace Phavour\Middleware;
 
-use Phavour\Http\Response;
 use Phavour\Http\Request;
+use Phavour\Http\Response;
 
 /**
  * \Phavour\Middleware\MiddlewareAbstract
@@ -54,6 +54,7 @@ abstract class MiddlewareAbstract
      * Constructor which passes Request and Response
      * @param Request $request
      * @param Response $response
+     * @noinspection PhpUnused
      */
     final public function __construct(Request $request, Response $response)
     {

@@ -1,4 +1,4 @@
-<?php
+<?php /** @noinspection PhpIllegalPsrClassPathInspection */
 /**
  * Phavour PHP Framework Library
  *
@@ -32,8 +32,10 @@
  */
 namespace Phavour\Tests;
 
+use Exception;
 use Phavour\Application;
 use Phavour\Cache\AdapterNull;
+use Phavour\Package;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -47,13 +49,15 @@ class ApplicationTest extends TestCase
     private $app = null;
 
     /**
-     * @var \Phavour\Package[]
+     * @var Package[]
      */
     private $packages = array();
 
+    /**
+     * @throws Exception
+     */
     public function setUp(): void
     {
-        /** @var \Phavour\Package[] $appPackages */
         global $appPackages;
         $this->packages = $appPackages;
 
@@ -61,6 +65,9 @@ class ApplicationTest extends TestCase
         $this->app->setCacheAdapter(new AdapterNull());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testCantUseCacheFirst()
     {
         @ob_start();
@@ -77,47 +84,59 @@ class ApplicationTest extends TestCase
         $this->assertTrue($this->app->isSetup());
     }
 
+    /**
+     * @throws Exception
+     */
     public function testInvalidRoute()
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
-        $_SERVER['REQUEST_URI'] = '/this/isnt/a/valid/path/ever';
+        $_SERVER['REQUEST_URI'] = '/this/is/not/a/valid/path/ever';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         @ob_start();
-        $result = $this->app->run();
+        $this->app->run();
         $content = @ob_get_clean();
         $this->assertStringContainsString('404: Page Not Found', $content);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testDirectRenderRoute()
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         $_SERVER['REQUEST_URI'] = '/view-only';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         @ob_start();
-        $result = $this->app->run();
+        $this->app->run();
         $content = @ob_get_clean();
         $this->assertStringContainsString('Test view file, for using view.directRender', $content);
         $this->assertStringContainsString('Test view file, declared view.layout', $content);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testValidRoute()
     {
         $_SERVER['REQUEST_URI'] = '/';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         @ob_start();
-        $result = $this->app->run();
+        $this->app->run();
         $content = @ob_get_clean();
         $this->assertStringContainsString('Welcome to Phavour', $content);
     }
 
+    /**
+     * @throws Exception
+     */
     public function testHasMiddlewareAndMiddlewareIsCalled()
     {
         $_SERVER['REMOTE_ADDR'] = '127.0.0.1';
         $_SERVER['REQUEST_URI'] = '/middleware';
         $_SERVER['REQUEST_METHOD'] = 'GET';
         @ob_start();
-        $result = $this->app->run();
+        $this->app->run();
         $content = @ob_get_clean();
         $this->assertTrue($this->app->hasMiddleware());
         $this->assertEquals('foobar', $content);
@@ -127,7 +146,7 @@ class ApplicationTest extends TestCase
     {
         try {
             $this->app->getPackage('foobar');
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             $this->assertInstanceOf('\Phavour\Application\Exception\PackageNotFoundException', $e);
             return;
         }
