@@ -237,7 +237,7 @@ class Application
             }
         }
 
-        $classString = $package['namespace'] . '\\src\\' . $runnables[0];
+        $classString = $package['namespace'] . '\\Src\\' . $runnables[0];
 
         if (class_exists($classString)) {
             try {
@@ -431,7 +431,7 @@ class Application
                     } else {
                         // @codeCoverageIgnoreStart
                         $e = new RunnableNotFoundException('Runnable not found');
-                        $e->setAdditionalData('Expected: ', '\\DefaultPackage\\src\\Error::notFound()');
+                        $e->setAdditionalData('Expected: ', '\\DefaultPackage\\Src\\Error::notFound()');
                         throw $e;
                         // @codeCoverageIgnoreEnd
                     }
@@ -480,7 +480,7 @@ class Application
                         $instance->uncaughtException();
                     } else {
                         $e = new RunnableNotFoundException('Runnable not found');
-                        $e->setAdditionalData('Expected: ', '\\DefaultPackage\\src\\Error::uncaughtException()');
+                        $e->setAdditionalData('Expected: ', '\\DefaultPackage\\Src\\Error::uncaughtException()');
                         throw $e;
                     }
                     $instance->finalise();
@@ -502,7 +502,7 @@ class Application
     }
 
     /**
-     * Get the class name of the \DefaultPackage\src\Error (if it exists)
+     * Get the class name of the \DefaultPackage\Src\Error (if it exists)
      * @return string|boolean false for failure
      */
     private function getErrorClass()
@@ -515,7 +515,7 @@ class Application
             // @codeCoverageIgnoreEnd
         }
 
-        $controller = $package['namespace'] . '\\src\\Error';
+        $controller = $package['namespace'] . '\\Src\\Error';
 
         if (!class_exists($controller)) {
             // @codeCoverageIgnoreStart

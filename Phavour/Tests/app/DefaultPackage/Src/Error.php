@@ -31,51 +31,43 @@
  * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-namespace Phavour\PhavourTests\DefaultPackage\src;
+namespace Phavour\PhavourTests\DefaultPackage\Src;
 
-use Phavour\Application\Exception\PackageNotFoundException;
-use Phavour\DebuggableException;
 use Phavour\Runnable;
-use Phavour\Runnable\View\Exception\LayoutFileNotFoundException;
 
 /**
- * Class Index
- * @package Phavour\PhavourTests\DefaultPackage\src
+ * Class Error
+ * @package Phavour\PhavourTests\DefaultPackage\Src
  * @noinspection PhpUnused
  */
-class Index extends Runnable
+class Error extends Runnable
 {
     /**
      * @return bool|void
-     * @throws DebuggableException
      * @noinspection PhpUnused
      */
     public function init()
     {
-        if ($_SERVER['REMOTE_ADDR'] != '127.0.0.1') {
-            $e = new DebuggableException('You can only access this method from 127.0.0.1');
-            $e->setAdditionalData('Reason', 'Coded check of IP at: ' . __METHOD__);
-            throw $e;
-        }
+
     }
 
     /**
-     * @throws LayoutFileNotFoundException
-     * @throws PackageNotFoundException
+     * Called upon a 404
+     * @param string $package
+     * @param string $class
+     * @param string $method
      * @noinspection PhpUnused
      */
-    public function index()
+    public function notFound($package = 'DefaultPackage', $class = 'Error', $method = 'notFound')
     {
-        /** @noinspection PhpUndefinedFieldInspection */
-        $this->view->data = 'I\'m from the runnable!';
-        $this->view->setLayout('default.phtml');
     }
 
     /**
+     * Called upon an error during boot, or an uncaught exception in a runnable
      * @noinspection PhpUnused
      */
-    public function middleware()
+    public function uncaughtException()
     {
-        $this->view->disableView();
+
     }
 }
